@@ -5,10 +5,12 @@
 
 class DiceCollection {
 private:
-	std::vector<TileMap> maps;
+	std::vector<GridMaker> maps;
+	GridMaker grid;
+	TileMap *dungeon;
 
 public:
-	DiceCollection(sf::Texture *tileset) {
+	DiceCollection(sf::Texture *tileset) : grid(16*7, 8*7) {
 		maps.reserve(MAPCOUNT);
 		for(int i = 1; i <= MAPCOUNT; i++) {
 			std::string name = "res/dice/map_a";
@@ -16,12 +18,18 @@ public:
 				name += '0';
 			name += std::to_string(i) + ".txt";
 			//std::cout << name << "\n";
-			GridMaker grid(name);
-			maps.emplace_back(tileset, 16, 16, Indexer(&grid, displayIndex, 0), HOLDING);
-
-			maps[i-1].setPosition(i * DIEWIDTH, 0);
-			UpdateList::addNode(&(maps[i-1]));
+			maps.emplace_back(name);
+			//maps.emplace_back(tileset, 16, 16, Indexer(&grid, displayIndex, 0), HOLDING);
 		}
+
+		GridMaker startGrid("res/dice/map_start.txt");
+		Indexer startIndex(&startGrid, displayIndex, 0);
+		overlayGrid(&startIndex, 0, 0);
+
+		//Load base tile map
+		dungeon = new TileMap(tileset, 16, 16, new Indexer(&grid, displayIndex, 0), DIETOP);
+		dungeon->setScale(6, 6);
+		UpdateList::addNode(dungeon);
 	}
 
 	int getNext() {
@@ -35,7 +43,21 @@ public:
 		return next;
 	}
 
-	const sf::Texture &getTexture(int index) {
+	/*const sf::Texture &getTexture(int index) {
 		return *(maps[index].getTexture());
+	}*/
+	Indexer *getDie(int index) {
+		return new Indexer(&maps[index], displayIndex, 0);
+	}
+
+	Indexer *getCollision() {
+		return new Indexer(&grid, collisionIndex, WALL);
+	}
+
+	void overlayGrid(Indexer *index, unsigned int x, unsigned int y) {
+		GridMaker *grid = &(this->grid);
+		index->mapGrid([x, y, grid](char c, sf::Vector2f pos) {
+			grid->setTile(x + pos.x, y + pos.y, c);
+		});
 	}
 };

@@ -5,7 +5,6 @@
 #include "Skyrmion/LightMap.h"
 #include "indexes.h"
 #include "Player.hpp"
-#include "Holder.hpp"
 
 int main() {
 	//Load node textures
@@ -18,12 +17,6 @@ int main() {
 	UpdateList::loadTexture(&tilesTexture, "res/foresttiles.png");
 	UpdateList::loadTexture(&borderTexture, "res/border.png");
 
-	//Load base tile maps
-	GridMaker grid(112*4, 112*4);
-	TileMap dungeon(&tilesTexture, 16, 16, Indexer(&grid, displayIndex, 0), DIETOP);
-	Indexer collisionMap(&grid, collisionIndex, WALL, 16, 16);
-	UpdateList::addNode(&dungeon);
-
 	//Setup Light maps
 	/*Indexer lightMap(&grid, lightIndex, 0, 2, 2);
 	LightMap staticLights(8, 8, 0, 0.1, lightMap, LIGHT, true);
@@ -31,18 +24,11 @@ int main() {
 	UpdateList::addNode(&staticLights);*/
 
 	//Upper area player
-	Player player(collisionMap);
+	Player player(&tilesTexture, &borderTexture);
 	player.setPosition(sf::Vector2f(100, 100));
 	player.setTexture(playerTexture);
-	player.setScale(7, 7);
+	player.setScale(6, 6);
 	UpdateList::addNode(&player);
-
-	//Dice Holder
-	Holder holder(&tilesTexture);
-	holder.setParent(&player);
-	holder.setPosition(sf::Vector2f(0, 300));
-	holder.setTexture(borderTexture);
-	UpdateList::addNode(&holder);
 
 	//Place Treasure chests
 	/*collisionMap.mapGrid([&treasureTexture](char c, sf::Vector2f pos) {
@@ -59,6 +45,7 @@ int main() {
 	UpdateList::alwaysLoadLayer(BORDER);
 	UpdateList::alwaysLoadLayer(HOLDING);
 	UpdateList::alwaysLoadLayer(PLAYER);
+	UpdateList::alwaysLoadLayer(INPUT);
 
 	//Finish engine setup
 	UpdateList::setCamera(&player, sf::Vector2f(1920, 1080));

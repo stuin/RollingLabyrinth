@@ -1,5 +1,6 @@
 #include "Skyrmion/InputHandler.hpp"
 #include "Skyrmion/TileMap.hpp"
+#include "Holder.hpp"
 
 sf::Keyboard::Key controlLayouts[3][4] = {
 	{sf::Keyboard::W, sf::Keyboard::S, sf::Keyboard::A, sf::Keyboard::D},
@@ -8,8 +9,10 @@ sf::Keyboard::Key controlLayouts[3][4] = {
 };
 
 class Player : public Node {
-	InputHandler input;
-	Indexer collisionMap;
+	DirectionHandler input;
+	Indexer *collisionMap;
+
+	Holder holder;
 
 	//End screen stuff
 	sf::Texture endTexture;
@@ -19,16 +22,18 @@ public:
 	int treasure = 0;
 	bool endShown = false;
 
-	Player(Indexer _collisionMap) : 
+	Player(sf::Texture *tilesTexture, sf::Texture *borderTexture) : 
 		Node(PLAYER), input(controlLayouts[2], INPUT, this), 
-		collisionMap(_collisionMap), endNode(TITLE, sf::Vector2i(64, 32), false, this) {
+		holder(tilesTexture, borderTexture, this),
+		endNode(TITLE, sf::Vector2i(64, 32), false, this) {
 
 		collideWith(TREASURE);
+		collisionMap = holder.getCollision();
 	}
 
 	void update(double time) {
 		sf::Vector2f target = input.getMovement(this, time * 320);
-		int targetType = collisionMap.getTile(target);
+		int targetType = collisionMap->getTile(target);
 
 		//Move player
 		if(!endShown) {

@@ -4,30 +4,55 @@
 #define DICEMAX 8
 #define DICESTART 4
 
+sf::Keyboard::Key diceLayout[DICEMAX] = {
+	sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3, sf::Keyboard::Num4,
+	sf::Keyboard::Num5, sf::Keyboard::Num6, sf::Keyboard::Num7, sf::Keyboard::Num8
+};
+
 class Holder : public Node {
 private:
-	int count = DICESTART;
 	int values[DICEMAX];
-	std::vector<Node> dice;
+	std::vector<TileMap> dice;
+
 	DiceCollection collection;
+	InputHandler input;
+	int count = DICESTART;
 
 public:
-	Holder(sf::Texture *_tileset): Node(BORDER, sf::Vector2i(1024, 128)), collection(_tileset) {
+	Holder(sf::Texture *_tileset, sf::Texture *borderTexture, Node *parent) 
+	: Node(BORDER, sf::Vector2i(1024, 128), false, parent), 
+	collection(_tileset), input(diceLayout, DICEMAX, INPUT, this) {
+		setPosition(sf::Vector2f(0, 300));
+		setTexture(*borderTexture);
+
 		dice.reserve(DICEMAX);
 		for(int i = 0; i < DICEMAX; i++) {
-			dice.emplace_back(HOLDING, sf::Vector2i(DIEWIDTH, DIEWIDTH), true, this);
-			dice[i].setPosition((i)*(DIEWIDTH+16), 0);
+			//dice.emplace_back(HOLDING, sf::Vector2i(DIEWIDTH, DIEWIDTH), true, this);
+			dice.emplace_back(_tileset, 16, 16, collection.getDie(0), HOLDING);
+			dice[i].setHidden(true);
+			dice[i].setParent(this);
+			dice[i].setPosition((i-4)*(DIEWIDTH+16)+16, -56);
 			UpdateList::addNode(&(dice[i]));
 
 			if(i < DICESTART) {
 				values[i] = collection.getNext();
 				std::cout << values[i] << "\n";
-				dice[i].setTexture(collection.getTexture(values[i]));
+				//dice[i].setTexture(collection.getTexture(values[i]));
+				dice[i].setIndex(collection.getDie(values[i]));
 				dice[i].setHidden(false);
 			}
 		}
 
+		input.pressedFunc = [](int i) {
+
+		};
+
+		UpdateList::addNode(this);
 		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
+	}
+
+	Indexer *getCollision() {
+		return collection.getCollision();
 	}
 
 	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
