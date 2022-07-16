@@ -31,15 +31,14 @@ public:
 
 	Player(TextureSet *textures) : Node(PLAYER, sf::Vector2i(10, 10)), 
 	movementInput(controlLayouts[2], INPUT, this), placeInput(diceLayout, DICEMAX, INPUT, this),
-	holder(textures, this), endNode(TITLE, sf::Vector2i(64, 32), true, this) {
+	holder(textures, this), endNode(TITLE, sf::Vector2i(283, 99), true, this) {
 
 		collideWith(COLLECTABLE);
 		collideWith(ENEMY);
 		collisionMap = holder.getCollision();
 
 		this->textures = textures;
-		endNode.setTexture(textures->endTexture);
-		endNode.setPosition(0, -48);
+		
 
 		//Place new tile
 		Holder *_holder = &holder;
@@ -62,26 +61,31 @@ public:
 		int targetType = collisionMap->getTile(target);
 
 		//Move player
-		if(!endShown) {
-			if(targetType != WALL && targetType != EMPTY)
-				setPosition(target);
+		if(targetType != WALL && targetType != EMPTY)
+			setPosition(target);
 
-			//Check for win condition
-			if(targetType == EXIT) {
-				//Show end screen
-				endNode.setHidden(false);
-				UpdateList::addNode(&endNode);
-				endShown = true;
-			}
+		//Win game
+		if(targetType == EXIT) {
+			//Show end screen
+			endNode.setTexture(textures->endTexture);
+			endNode.setScale(3, 3);
+			endNode.setPosition(0, -48);
+			endNode.setHidden(false);
+			UpdateList::addNode(&endNode);
+			UpdateList::pauseLayer(PLAYER);
+			UpdateList::pauseLayer(BULLET);
+			UpdateList::pauseLayer(ENEMY);
+		}
 
-			if(fired) {
-				Bullet *bullet = new Bullet(fireAt, collisionMap);
-				bullet->setTexture(textures->bulletTexture);
-				bullet->setScale(1.5, 1.5);
-				bullet->setPosition(getGPosition());
-				UpdateList::addNode(bullet);
-				fired = false;
-			}
+
+		//Fire bullet
+		if(fired) {
+			Bullet *bullet = new Bullet(fireAt, collisionMap);
+			bullet->setTexture(textures->bulletTexture);
+			bullet->setScale(1.5, 1.5);
+			bullet->setPosition(getGPosition());
+			UpdateList::addNode(bullet);
+			fired = false;
 		}
 	}
 
@@ -90,7 +94,17 @@ public:
 			holder.addDie();
 			object->setDelete();
 		} else if(object->getLayer() == ENEMY) {
-			holder.deleteDie(-1);
+			if(holder.deleteDie(-1) == -1) {
+				//Show end screen
+				endNode.setTexture(textures->endTexture);
+				endNode.setScale(3, 3);
+				endNode.setPosition(0, -48);
+				endNode.setHidden(false);
+				UpdateList::addNode(&endNode);
+				UpdateList::pauseLayer(PLAYER);
+				UpdateList::pauseLayer(BULLET);
+				UpdateList::pauseLayer(ENEMY);
+			}
 			object->setDelete();
 		}
 	}

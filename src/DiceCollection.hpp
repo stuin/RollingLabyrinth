@@ -7,6 +7,8 @@
 #define MAXSPINS 30
 #define GRIDSCALE 4
 #define GRIDSIZE 16*4
+#define GRIDWIDTH 7
+#define STARTROOM 4*7+1
 
 class DiceCollection {
 private:
@@ -15,7 +17,7 @@ private:
 	TileMap *dungeon;
 
 public:
-	DiceCollection(TextureSet *textures) : grid(9*7+2, 9*7+2) {
+	DiceCollection(TextureSet *textures) : grid(GRIDWIDTH*7+2, GRIDWIDTH*7+2) {
 		maps.reserve(MAPCOUNT);
 		for(int i = 1; i <= MAPCOUNT; i++) {
 			std::string name = "res/dice/map_a";
@@ -46,7 +48,30 @@ public:
 		//Add starter room
 		GridMaker startGrid("res/dice/map_start.txt");
 		Indexer startIndex(&startGrid, displayIndex, 0);
-		overlayGrid(&startIndex, 4*7+1, 4*7+1);
+		overlayGrid(&startIndex, STARTROOM, STARTROOM);
+
+		//Find location on edge
+		int y = getNext(GRIDWIDTH) + 1;
+		int x = getNext(GRIDWIDTH) + 1;
+		switch(getNext(4)) {
+			case 0:
+				y = 0;
+				break;
+			case 1:
+				y = GRIDWIDTH - 1;
+				break;
+			case 2:
+				x = 0;
+				break;
+			case 3:
+				x = GRIDWIDTH - 1;
+				break;
+		}
+
+		//Add exit room
+		GridMaker endGrid("res/dice/map_end.txt");
+		Indexer endIndex(&endGrid, displayIndex, 0);
+		overlayGrid(&startIndex, x, y);
 	}
 
 	int getNext(int size) {

@@ -41,7 +41,7 @@ static const std::map<char, int> displayIndex = {
 	{'&',0},
 	{'.', 1},
 	{'-', 2},
-	{'s', 2},
+	{'s', 3},
 	{'a', 3},
 	{'b', 3},
 	{'e', 3}
@@ -56,5 +56,5 @@ static const std::map<char, int> collisionIndex = {
 	{'s', FLOOR},
 	{'a', FLOOR},
 	{'b', FLOOR},
-	{'e', FLOOR},
+	{'e', EXIT}
 };

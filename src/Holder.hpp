@@ -64,19 +64,22 @@ public:
 		}
 	}
 
-	void deleteDie(int i) {
-		if(i == -1 && count > 0)
+	int deleteDie(int i) {
+		if(count == 0)
+			return -1;
+
+		//Choose random die
+		if(i == -1)
 			i = collection.getNext(count);
 
 		//Shift held dice
-		if(i >= 0 && i < count) {
-			for(int j = i; j < count - 1; j++) {
-				values[j] = values[j + 1];
-				dice[j].setIndex(collection.getDie(values[j]));
-			}
-			count--;
-			dice[count].setHidden(true);
+		for(int j = i; j < count - 1; j++) {
+			values[j] = values[j + 1];
+			dice[j].setIndex(collection.getDie(values[j]));
 		}
+		count--;
+		dice[count].setHidden(true);
+		return count;
 	}
 
 	void placeNode(int x, int y, char c, sf::Vector2f pos) {
