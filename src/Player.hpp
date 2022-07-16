@@ -1,6 +1,7 @@
 #include "Skyrmion/InputHandler.hpp"
 #include "Skyrmion/TileMap.hpp"
 #include "Holder.hpp"
+#include "Bullet.hpp"
 
 sf::Keyboard::Key controlLayouts[3][4] = {
 	{sf::Keyboard::W, sf::Keyboard::S, sf::Keyboard::A, sf::Keyboard::D},
@@ -14,39 +15,53 @@ sf::Keyboard::Key diceLayout[DICEMAX] = {
 };
 
 class Player : public Node {
-	DirectionHandler movement;
-	InputHandler input;
+	DirectionHandler movementInput;
+	InputHandler placeInput;
 	Indexer *collisionMap;
+	TextureSet *textures;
 
 	Holder holder;
-
-	//End screen stuff
-	sf::Texture endTexture;
 	Node endNode;
+
+	sf::Vector2f fireAt;
+	bool fired = false;
 
 public:
 	bool endShown = false;
 
-	Player(TextureSet *textures) : 
-		Node(PLAYER), movement(controlLayouts[2], INPUT, this), 
-		input(diceLayout, 4, INPUT, this),
-		holder(textures, this),
-		endNode(TITLE, sf::Vector2i(64, 32), true, this) {
+	Player(TextureSet *textures) : Node(PLAYER, sf::Vector2i(10, 10)), 
+	movementInput(controlLayouts[2], INPUT, this), placeInput(diceLayout, DICEMAX, INPUT, this),
+	holder(textures, this), endNode(TITLE, sf::Vector2i(64, 32), true, this) {
 
 		collideWith(COLLECTABLE);
+		collideWith(ENEMY);
 		collisionMap = holder.getCollision();
+
+		this->textures = textures;
 		endNode.setTexture(textures->endTexture);
 		endNode.setPosition(0, -48);
 
 		//Place new tile
 		Holder *_holder = &holder;
-		input.pressedFunc = [_holder](int i) {
+		placeInput.pressedFunc = [_holder](int i) {
 			_holder->placeDie(i);
 		};
+
+		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
+	}
+
+	void recieveEvent(sf::Event event, WindowSize *windowSize) {
+		sf::Vector2f pos(
+			event.mouseButton.x * windowSize->shiftX + windowSize->cornerX, 
+			event.mouseButton.y * windowSize->shiftY + windowSize->cornerY);
+		if(event.mouseButton.button == sf::Mouse::Left) {
+			fireAt = pos - getGPosition();
+			fired = true;
+		}
 	}
 
 	void update(double time) {
-		sf::Vector2f target = movement.getMovement(this, time * 320);
+		sf::Vector2f target = movementInput.getMovement(this, time * 400);
 		int targetType = collisionMap->getTile(target);
 
 		//Move player
@@ -61,11 +76,25 @@ public:
 				UpdateList::addNode(&endNode);
 				endShown = true;
 			}
+
+			if(fired) {
+				Bullet *bullet = new Bullet(fireAt, collisionMap);
+				bullet->setTexture(textures->bulletTexture);
+				bullet->setScale(1.5, 1.5);
+				bullet->setPosition(getGPosition());
+				UpdateList::addNode(bullet);
+				fired = false;
+			}
 		}
 	}
 
 	void collide(Node *object) {
-		holder.addDie();
-		object->setDelete();
+		if(object->getLayer() == COLLECTABLE) {
+			holder.addDie();
+			object->setDelete();
+		} else if(object->getLayer() == ENEMY) {
+			holder.deleteDie(-1);
+			object->setDelete();
+		}
 	}
 };

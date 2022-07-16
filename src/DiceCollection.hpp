@@ -1,4 +1,4 @@
-#include "Skyrmion/TileMap.hpp"
+#include "Skyrmion/AnimatedTileMap.hpp"
 
 #define MAPCOUNT 24
 #define DIEWIDTH 112
@@ -35,7 +35,7 @@ public:
 	}
 
 	int getNext(int size) {
-		return rand() % maps.size();
+		return rand() % size;
 	}
 
 	int getNext(int order, int rotation, int index) {

@@ -12,6 +12,8 @@ int main() {
 	//Load node textures
 	TextureSet textures;
 	UpdateList::loadTexture(&textures.playerTexture, "res/player.png");
+	UpdateList::loadTexture(&textures.enemyTexture, "res/enemy.png");
+	UpdateList::loadTexture(&textures.bulletTexture, "res/bullet.png");
 	UpdateList::loadTexture(&textures.diceTexture, "res/dice.png");
 	UpdateList::loadTexture(&textures.tilesTexture, "res/dicetiles.png");
 	UpdateList::loadTexture(&textures.borderTexture, "res/border.png");
@@ -29,16 +31,6 @@ int main() {
 	player.setTexture(textures.playerTexture);
 	player.setScale(6, 6);
 	UpdateList::addNode(&player);
-
-	//Place Treasure chests
-	/*collisionMap.mapGrid([&treasureTexture](char c, sf::Vector2f pos) {
-		if(c == 'H' || c == 'h') {
-			Node *t = new Node(TREASURE, sf::Vector2i(10, 9));
-			t->setTexture(treasureTexture);
-			t->setPosition(pos + sf::Vector2f(8, 8));
-			UpdateList::addNode(t);
-		}
-	});*/
 
 	UpdateList::alwaysLoadLayer(TABLE);
 	UpdateList::alwaysLoadLayer(DIETOP);

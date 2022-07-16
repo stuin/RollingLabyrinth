@@ -4,6 +4,8 @@
 
 struct TextureSet {
 	sf::Texture playerTexture;
+	sf::Texture enemyTexture;
+	sf::Texture bulletTexture;
 	sf::Texture diceTexture;
 	sf::Texture tilesTexture;
 	sf::Texture borderTexture;
@@ -23,6 +25,8 @@ enum CollisionLayer {
 	DIESIDES,
 	DIETOP,
 	COLLECTABLE,
+	ENEMY,
+	BULLET,
 	PLAYER,
 	LIGHT,
 	BORDER,
