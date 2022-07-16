@@ -10,7 +10,7 @@ sf::Keyboard::Key controlLayouts[3][4] = {
 
 sf::Keyboard::Key diceLayout[DICEMAX] = {
 	sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3, sf::Keyboard::Num4,
-	sf::Keyboard::Num5, sf::Keyboard::Num6, sf::Keyboard::Num7, sf::Keyboard::Num8
+	sf::Keyboard::Num5, sf::Keyboard::Num6, sf::Keyboard::Num7
 };
 
 class Player : public Node {
@@ -25,7 +25,6 @@ class Player : public Node {
 	Node endNode;
 
 public:
-	int treasure = 0;
 	bool endShown = false;
 
 	Player(TextureSet *textures) : 
@@ -34,7 +33,7 @@ public:
 		holder(textures, this),
 		endNode(TITLE, sf::Vector2i(64, 32), true, this) {
 
-		collideWith(TREASURE);
+		collideWith(COLLECTABLE);
 		collisionMap = holder.getCollision();
 		endNode.setTexture(textures->endTexture);
 		endNode.setPosition(0, -48);
@@ -60,17 +59,13 @@ public:
 				//Show end screen
 				endNode.setHidden(false);
 				UpdateList::addNode(&endNode);
-
-				std::cout << "YOU WIN!!\n";
-				std::cout << treasure << " Treasure chests collected!\n";
-				
 				endShown = true;
 			}
 		}
 	}
 
 	void collide(Node *object) {
-		treasure++;
+		holder.addDie();
 		object->setDelete();
 	}
 };

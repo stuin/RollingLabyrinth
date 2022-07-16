@@ -4,7 +4,7 @@
 
 struct TextureSet {
 	sf::Texture playerTexture;
-	sf::Texture treasureTexture;
+	sf::Texture diceTexture;
 	sf::Texture tilesTexture;
 	sf::Texture borderTexture;
 	sf::Texture endTexture;
@@ -22,13 +22,11 @@ enum CollisionLayer {
 	TABLE,
 	DIESIDES,
 	DIETOP,
-	TREASURE,
+	COLLECTABLE,
 	PLAYER,
 	LIGHT,
 	BORDER,
 	HOLDING,
-	PLACINGTOP,
-	PLACINGSIDES,
 	INPUT,
 	TITLE
 };

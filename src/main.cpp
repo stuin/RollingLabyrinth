@@ -11,8 +11,8 @@ int main() {
 
 	//Load node textures
 	TextureSet textures;
-	UpdateList::loadTexture(&textures.playerTexture, "res/upperplayer.png");
-	UpdateList::loadTexture(&textures.treasureTexture, "res/treasure.png");
+	UpdateList::loadTexture(&textures.playerTexture, "res/player.png");
+	UpdateList::loadTexture(&textures.diceTexture, "res/dice.png");
 	UpdateList::loadTexture(&textures.tilesTexture, "res/dicetiles.png");
 	UpdateList::loadTexture(&textures.borderTexture, "res/border.png");
 	UpdateList::loadTexture(&textures.endTexture, "res/endscreen.png");

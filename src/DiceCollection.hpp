@@ -2,6 +2,9 @@
 
 #define MAPCOUNT 24
 #define DIEWIDTH 112
+#define PERMUTATIONS 720
+#define ROTATIONS 4096
+#define MAXSPINS 30
 
 class DiceCollection {
 private:
@@ -31,15 +34,25 @@ public:
 		overlayGrid(&startIndex, 28, 28);
 	}
 
-	int getNext() {
+	int getNext(int size) {
 		return rand() % maps.size();
 	}
 
-	int getNext(int prev) {
-		int next = getNext();
-		while(next / 4 == prev / 4)
-			next = getNext();
-		return next;
+	int getNext(int order, int rotation, int index) {
+		int perm[6] = {5, 4, 3, 2, 1, 0};
+		rotation *= 4;
+		index %= 6;
+
+		for(int i = 0; i < index + 1; i++) {
+			int j = i + order % (6-i);
+			int s = perm[i];
+			perm[i] = perm[j];
+			perm[j] = s;
+
+			order /= (6-i);
+			rotation /= 4;
+		}
+		return perm[index] * 4 + rotation % 4;
 	}
 
 	/*const sf::Texture &getTexture(int index) {

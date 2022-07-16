@@ -1,8 +1,8 @@
 #include "Skyrmion/UpdateList.h"
 #include "DiceCollection.hpp"
 
-#define DICEMAX 8
-#define DICESTART 4
+#define DICEMAX 7
+#define DICESTART 3
 
 class Holder : public Node {
 private:
@@ -30,7 +30,7 @@ public:
 			UpdateList::addNode(&(dice[i]));
 
 			if(i < DICESTART) {
-				values[i] = collection.getNext();
+				values[i] = collection.getNext(MAPCOUNT);
 				//dice[i].setTexture(collection.getTexture(values[i]));
 				dice[i].setIndex(collection.getDie(values[i]));
 				dice[i].setHidden(false);
@@ -39,16 +39,31 @@ public:
 
 		UpdateList::addNode(this);
 		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
+
+		/*for(int j = 0; j < 10; j++) {
+			for(int i = 0; i < 6; i++)
+				std::cout << collection.getNext(j,j,i) << " ";
+			std::cout << "\n";
+		}*/
 	}
 
 	Indexer *getCollision() {
 		return collection.getCollision();
 	}
 
+	void addDie() {
+		if(count < MAPCOUNT) {
+			values[count] = collection.getNext(MAPCOUNT);
+			dice[count].setIndex(collection.getDie(values[count]));
+			dice[count].setHidden(false);
+			count++;
+		}
+	}
+
 	void placeDie(int i) {
 		sf::Vector2f pos = getParent()->getPosition();
 		Indexer *collisionMap = collection.getCollision();
-		sf::Texture *treasureTexture = &textures->treasureTexture;
+		sf::Texture *treasureTexture = &textures->diceTexture;
 
 		if(collisionMap->getTile(pos) == EDGE) {
 			int x = pos.x / collisionMap->getScale().x;
@@ -76,9 +91,10 @@ public:
 							int _x = (x + pos.x) * 96 + 48;
 							int _y = (y + pos.y) * 96 + 48;
 
-							Node *t = new Node(TREASURE, sf::Vector2i(10, 9));
+							Node *t = new Node(COLLECTABLE, sf::Vector2i(14, 14));
 							t->setTexture(*treasureTexture);
-							t->setScale(6, 6);
+							t->setTextureRect(sf::IntRect(0, 0, 14, 14));
+							t->setScale(3, 3);
 							t->setPosition(_x, _y);
 							UpdateList::addNode(t);
 						}
