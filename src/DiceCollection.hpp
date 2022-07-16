@@ -22,14 +22,14 @@ public:
 			//maps.emplace_back(tileset, 16, 16, Indexer(&grid, displayIndex, 0), HOLDING);
 		}
 
-		GridMaker startGrid("res/dice/map_start.txt");
-		Indexer startIndex(&startGrid, displayIndex, 0);
-		overlayGrid(&startIndex, 0, 0);
-
 		//Load base tile map
 		dungeon = new TileMap(tileset, 16, 16, new Indexer(&grid, displayIndex, 0), DIETOP);
 		dungeon->setScale(6, 6);
 		UpdateList::addNode(dungeon);
+
+		GridMaker startGrid("res/dice/map_start.txt");
+		Indexer startIndex(&startGrid, displayIndex, 0);
+		overlayGrid(&startIndex, 28, 28);
 	}
 
 	int getNext() {
@@ -51,7 +51,7 @@ public:
 	}
 
 	Indexer *getCollision() {
-		return new Indexer(&grid, collisionIndex, WALL);
+		return new Indexer(&grid, collisionIndex, FLOOR, 96, 96);
 	}
 
 	void overlayGrid(Indexer *index, unsigned int x, unsigned int y) {
@@ -59,5 +59,6 @@ public:
 		index->mapGrid([x, y, grid](char c, sf::Vector2f pos) {
 			grid->setTile(x + pos.x, y + pos.y, c);
 		});
+		dungeon->reload();
 	}
 };

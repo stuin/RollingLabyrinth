@@ -8,8 +8,14 @@ sf::Keyboard::Key controlLayouts[3][4] = {
 	{sf::Keyboard::W, sf::Keyboard::R, sf::Keyboard::A, sf::Keyboard::S}
 };
 
+sf::Keyboard::Key diceLayout[DICEMAX] = {
+	sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3, sf::Keyboard::Num4,
+	sf::Keyboard::Num5, sf::Keyboard::Num6, sf::Keyboard::Num7, sf::Keyboard::Num8
+};
+
 class Player : public Node {
-	DirectionHandler input;
+	DirectionHandler movement;
+	InputHandler input;
 	Indexer *collisionMap;
 
 	Holder holder;
@@ -23,22 +29,50 @@ public:
 	bool endShown = false;
 
 	Player(sf::Texture *tilesTexture, sf::Texture *borderTexture) : 
-		Node(PLAYER), input(controlLayouts[2], INPUT, this), 
+		Node(PLAYER), movement(controlLayouts[2], INPUT, this), 
+		input(diceLayout, 4, INPUT, this),
 		holder(tilesTexture, borderTexture, this),
 		endNode(TITLE, sf::Vector2i(64, 32), false, this) {
 
 		collideWith(TREASURE);
 		collisionMap = holder.getCollision();
+
+		//Place new tile
+		Indexer *_collisionMap = this->collisionMap;
+		Holder *_holder = &(this->holder);
+		Player *_player = this;
+		input.pressedFunc = [_holder, _player, _collisionMap](int i) {
+			if(_collisionMap->getTile(_player->getPosition()) == EDGE) {
+				int x = _player->getPosition().x / _collisionMap->getScale().x;
+				int y = _player->getPosition().y / _collisionMap->getScale().y;
+				if(i < _holder->getCount()) {
+					if(x % 7 == 0)
+						x -= 3;
+					else if(x % 7 == 6)
+						x += 3;
+					else if(y % 7 == 0)
+						y -= 3;
+					else if(y % 7 == 6)
+						y += 3;
+
+					x = (x / 7) * 7;
+					y = (y / 7) * 7;
+					std::cout << x << " " << y << "\n";
+
+					_holder->overlayGrid(i, x, y);
+				}
+			}
+		};
 	}
 
 	void update(double time) {
-		sf::Vector2f target = input.getMovement(this, time * 320);
+		sf::Vector2f target = movement.getMovement(this, time * 320);
 		int targetType = collisionMap->getTile(target);
 
 		//Move player
 		if(!endShown) {
-			//if(targetType == FLOOR)
-			setPosition(target);
+			if(targetType != WALL)
+				setPosition(target);
 
 			//Check for win condition
 			if(targetType == EXIT) {

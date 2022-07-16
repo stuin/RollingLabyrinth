@@ -4,7 +4,6 @@
 
 enum CollisionType {
 	WALL,
-	PROP,
 	FLOOR,
 	EDGE,
 	EXIT
@@ -27,28 +26,22 @@ enum CollisionLayer {
 
 static const std::map<char, int> displayIndex = {
 	{' ', -1},
-	{'\\',0},
-	{'a', 1},
-	{'-', 1},
-	{'+', 2},
-	{'#', 3},
-	{',', 4},
-	{'H', 4},
-	{'.', 5},
-	{'h', 5},
-	{'=', 5},
-	{'[', 5},
-	{'|', 6},
-	{']', 6},
-	{'@', 7},
-	{'!', 8},
-	{'T', 9},
-	{'t', 10}
+	{'#',0},
+	{'.', 1},
+	{'-', 2},
+	{'s', 2},
+	{'a', 3},
+	{'e', 3}
 };
 
 static const std::map<char, int> collisionIndex = {
+	{' ', WALL},
 	{'#', WALL},
-	{' ', EDGE}
+	{'.', FLOOR},
+	{'-', EDGE},
+	{'s', FLOOR},
+	{'a', FLOOR},
+	{'e', FLOOR},
 };
 
 static const std::map<char, int> lightIndex = {

@@ -14,7 +14,7 @@ int main() {
 	sf::Texture borderTexture;
 	UpdateList::loadTexture(&playerTexture, "res/upperplayer.png");
 	UpdateList::loadTexture(&treasureTexture, "res/treasure.png");
-	UpdateList::loadTexture(&tilesTexture, "res/foresttiles.png");
+	UpdateList::loadTexture(&tilesTexture, "res/dicetiles.png");
 	UpdateList::loadTexture(&borderTexture, "res/border.png");
 
 	//Setup Light maps
@@ -25,7 +25,7 @@ int main() {
 
 	//Upper area player
 	Player player(&tilesTexture, &borderTexture);
-	player.setPosition(sf::Vector2f(100, 100));
+	player.setPosition(sf::Vector2f(2960, 2960));
 	player.setTexture(playerTexture);
 	player.setScale(6, 6);
 	UpdateList::addNode(&player);

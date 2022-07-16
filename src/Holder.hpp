@@ -4,27 +4,21 @@
 #define DICEMAX 8
 #define DICESTART 4
 
-sf::Keyboard::Key diceLayout[DICEMAX] = {
-	sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3, sf::Keyboard::Num4,
-	sf::Keyboard::Num5, sf::Keyboard::Num6, sf::Keyboard::Num7, sf::Keyboard::Num8
-};
-
 class Holder : public Node {
 private:
 	int values[DICEMAX];
 	std::vector<TileMap> dice;
 
 	DiceCollection collection;
-	InputHandler input;
 	int count = DICESTART;
 
 public:
 	Holder(sf::Texture *_tileset, sf::Texture *borderTexture, Node *parent) 
-	: Node(BORDER, sf::Vector2i(1024, 128), false, parent), 
-	collection(_tileset), input(diceLayout, DICEMAX, INPUT, this) {
-		setPosition(sf::Vector2f(0, 300));
+	: Node(BORDER, sf::Vector2i(1024, 128), false, parent), collection(_tileset) {
+		setPosition(sf::Vector2f(0, 400));
 		setTexture(*borderTexture);
 
+		//Set up holding dice
 		dice.reserve(DICEMAX);
 		for(int i = 0; i < DICEMAX; i++) {
 			//dice.emplace_back(HOLDING, sf::Vector2i(DIEWIDTH, DIEWIDTH), true, this);
@@ -43,10 +37,6 @@ public:
 			}
 		}
 
-		input.pressedFunc = [](int i) {
-
-		};
-
 		UpdateList::addNode(this);
 		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
 	}
@@ -55,14 +45,11 @@ public:
 		return collection.getCollision();
 	}
 
-	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
-		sf::Vector2i pos(event.mouseButton.x * shiftX, event.mouseButton.y * shiftY);
-		if(event.mouseButton.button == sf::Mouse::Left && getRect().contains(pos)) {
-			
-		}
+	void overlayGrid(int i, int x, int y) {
+		collection.overlayGrid(collection.getDie(values[i]), x, y);
 	}
 
-	void addDie() {
-
+	int getCount() {
+		return count;
 	}
 };
