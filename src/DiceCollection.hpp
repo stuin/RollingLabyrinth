@@ -1,6 +1,6 @@
 #include "Skyrmion/TileMap.hpp"
 
-#define MAPCOUNT 12
+#define MAPCOUNT 24
 #define DIEWIDTH 112
 
 class DiceCollection {

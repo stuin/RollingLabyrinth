@@ -12,6 +12,7 @@ struct TextureSet {
 
 enum CollisionType {
 	WALL,
+	EMPTY,
 	FLOOR,
 	EDGE,
 	EXIT
@@ -44,7 +45,7 @@ static const std::map<char, int> displayIndex = {
 };
 
 static const std::map<char, int> collisionIndex = {
-	{' ', WALL},
+	{' ', EMPTY},
 	{'#', WALL},
 	{'.', FLOOR},
 	{'-', EDGE},

@@ -66,28 +66,32 @@ public:
 				x = (x / 7) * 7;
 				y = (y / 7) * 7;
 
-				//Place tile
-				collection.overlayGrid(collection.getDie(values[i]), x, y);
-				for(int j = i; j < count - 1; j++) {
-					values[j] = values[j + 1];
-					dice[j].setIndex(collection.getDie(values[j]));
-				}
-				count--;
-				dice[count].setHidden(true);
+				//Place tiles
+				if(collisionMap->getTile(sf::Vector2f(x*96, y*96)) == EMPTY) {
+					collection.overlayGrid(collection.getDie(values[i]), x, y);
 
-				//Place treasure
-				collection.getDie(values[i])->mapGrid([x, y, treasureTexture](char c, sf::Vector2f pos) {
-					if(c == 'a') {
-						int _x = (x + pos.x) * 96 + 48;
-						int _y = (y + pos.y) * 96 + 48;
+					//Place treasure
+					collection.getDie(values[i])->mapGrid([x, y, treasureTexture](char c, sf::Vector2f pos) {
+						if(c == 'a') {
+							int _x = (x + pos.x) * 96 + 48;
+							int _y = (y + pos.y) * 96 + 48;
 
-						Node *t = new Node(TREASURE, sf::Vector2i(10, 9));
-						t->setTexture(*treasureTexture);
-						t->setScale(6, 6);
-						t->setPosition(_x, _y);
-						UpdateList::addNode(t);
+							Node *t = new Node(TREASURE, sf::Vector2i(10, 9));
+							t->setTexture(*treasureTexture);
+							t->setScale(6, 6);
+							t->setPosition(_x, _y);
+							UpdateList::addNode(t);
+						}
+					});
+
+					//Shift held dice
+					for(int j = i; j < count - 1; j++) {
+						values[j] = values[j + 1];
+						dice[j].setIndex(collection.getDie(values[j]));
 					}
-				});
+					count--;
+					dice[count].setHidden(true);
+				}
 			}
 		}
 	}

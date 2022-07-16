@@ -52,7 +52,7 @@ public:
 
 		//Move player
 		if(!endShown) {
-			if(targetType != WALL)
+			if(targetType != WALL && targetType != EMPTY)
 				setPosition(target);
 
 			//Check for win condition
