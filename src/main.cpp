@@ -27,17 +27,18 @@ int main() {
 
 	//Setup player
 	Player player(&textures);
-	player.setPosition(sf::Vector2f(2960, 2960));
+	int cord = (4*7+3)*GRIDSIZE+GRIDSIZE/2;
+	player.setPosition(sf::Vector2f(cord, cord));
 	player.setTexture(textures.playerTexture);
-	player.setScale(6, 6);
+	player.setScale(GRIDSCALE, GRIDSCALE);
 	UpdateList::addNode(&player);
 
-	UpdateList::alwaysLoadLayer(TABLE);
-	UpdateList::alwaysLoadLayer(DIETOP);
-	UpdateList::alwaysLoadLayer(BORDER);
-	UpdateList::alwaysLoadLayer(HOLDING);
-	UpdateList::alwaysLoadLayer(PLAYER);
-	UpdateList::alwaysLoadLayer(INPUT);
+	UpdateList::staticLayer(TABLE);
+	UpdateList::staticLayer(DIETOP);
+	UpdateList::staticLayer(BORDER);
+	UpdateList::staticLayer(HOLDING);
+	UpdateList::staticLayer(PLAYER);
+	UpdateList::staticLayer(INPUT);
 
 	//Finish engine setup
 	UpdateList::setCamera(&player, sf::Vector2f(1920, 1080));

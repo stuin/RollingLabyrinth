@@ -2,7 +2,7 @@
 #include "DiceCollection.hpp"
 #include "Enemy.hpp"
 
-#define DICEMAX 7
+#define DICEMAX 8
 #define DICESTART 3
 
 class Holder : public Node {
@@ -20,7 +20,7 @@ private:
 public:
 	Holder(TextureSet *_textures, Node *parent) : Node(BORDER, sf::Vector2i(1024, 128), false, parent), 
 	collection(_textures), textures(_textures) {
-		setPosition(sf::Vector2f(0, 400));
+		setPosition(sf::Vector2f(0, 450));
 		setTexture(textures->borderTexture);
 
 		//Set up holding dice
@@ -80,20 +80,20 @@ public:
 	}
 
 	void placeNode(int x, int y, char c, sf::Vector2f pos) {
-		x = (x + pos.x) * 96 + 48;
-		y = (y + pos.y) * 96 + 48;
+		x = (x + pos.x) * GRIDSIZE + GRIDSIZE/2;
+		y = (y + pos.y) * GRIDSIZE + GRIDSIZE/2;
 
 		if(c == 'a') {
 			Node *t = new Node(COLLECTABLE, sf::Vector2i(14, 14));
 			t->setTexture(textures->diceTexture);
 			t->setTextureRect(sf::IntRect(0, 0, 14, 14));
-			t->setScale(3, 3);
+			t->setScale(2, 2);
 			t->setPosition(x, y);
 			UpdateList::addNode(t);
 		} else if(c == 'b') {
 			Enemy *t = new Enemy(getParent(), collection.getCollision());
 			t->setTexture(textures->enemyTexture);
-			t->setScale(5, 5);
+			t->setScale(3, 3);
 			t->setPosition(x, y);
 			UpdateList::addNode(t);
 		}
@@ -105,8 +105,9 @@ public:
 		Holder *_holder = this;
 
 		if(collisionMap->getTile(pos) == EDGE) {
-			int x = pos.x / collisionMap->getScale().x;
-			int y = pos.y / collisionMap->getScale().y;
+			int x = pos.x / collisionMap->getScale().x - 1;
+			int y = pos.y / collisionMap->getScale().y - 1;
+			//std::cout << x << " " << y << std::endl;
 			if(i < count) {
 				if(x % 7 == 0)
 					x -= 3;
@@ -117,11 +118,11 @@ public:
 				else if(y % 7 == 6)
 					y += 3;
 
-				x = (x / 7) * 7;
-				y = (y / 7) * 7;
+				x = (x / 7) * 7 + 1;
+				y = (y / 7) * 7 + 1;
 
 				//Place tiles
-				if(collisionMap->getTile(sf::Vector2f(x*96, y*96)) == EMPTY) {
+				if(collisionMap->getTile(sf::Vector2f(x*GRIDSIZE, y*GRIDSIZE)) == EMPTY) {
 					collection.overlayGrid(collection.getDie(values[i]), x, y);
 
 					//Place dice/enemy

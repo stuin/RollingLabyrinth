@@ -11,7 +11,7 @@ public:
 	}
 
 	void update(double time) {
-		sf::Vector2f target = getShiftedPosition(velocity, time * 800);
+		sf::Vector2f target = getShiftedPosition(velocity, time * 600);
 		int targetType = collisionMap->getTile(target);
 
 		if(targetType == WALL || targetType == EMPTY)

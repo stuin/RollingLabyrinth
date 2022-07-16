@@ -38,6 +38,7 @@ enum CollisionLayer {
 static const std::map<char, int> displayIndex = {
 	{' ', -1},
 	{'#',0},
+	{'&',0},
 	{'.', 1},
 	{'-', 2},
 	{'s', 2},
@@ -49,31 +50,11 @@ static const std::map<char, int> displayIndex = {
 static const std::map<char, int> collisionIndex = {
 	{' ', EMPTY},
 	{'#', WALL},
+	{'&', WALL},
 	{'.', FLOOR},
 	{'-', EDGE},
 	{'s', FLOOR},
 	{'a', FLOOR},
 	{'b', FLOOR},
 	{'e', FLOOR},
-};
-
-static const std::map<char, int> lightIndex = {
-	{'#', -100},
-	{' ', -100},
-	{'@', -100},
-	{'T', -80},
-	{'t', 0},
-	{'H', 0},
-	{'h', 0},
-	{',', 0},
-	{'.', 0},
-	{']', 0},
-	{'[', 0},
-	{'=', 0},
-	{'_', 0},
-	{'-', 0},
-	{'\\',0},
-	{'+', 0},
-	{'|', 0},
-	{'!', 100}
 };

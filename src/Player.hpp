@@ -11,7 +11,7 @@ sf::Keyboard::Key controlLayouts[3][4] = {
 
 sf::Keyboard::Key diceLayout[DICEMAX] = {
 	sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3, sf::Keyboard::Num4,
-	sf::Keyboard::Num5, sf::Keyboard::Num6, sf::Keyboard::Num7
+	sf::Keyboard::Num5, sf::Keyboard::Num6, sf::Keyboard::Num7, sf::Keyboard::Num8
 };
 
 class Player : public Node {
@@ -51,17 +51,14 @@ public:
 	}
 
 	void recieveEvent(sf::Event event, WindowSize *windowSize) {
-		sf::Vector2f pos(
-			event.mouseButton.x * windowSize->shiftX + windowSize->cornerX, 
-			event.mouseButton.y * windowSize->shiftY + windowSize->cornerY);
 		if(event.mouseButton.button == sf::Mouse::Left) {
-			fireAt = pos - getGPosition();
+			fireAt = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y) - getGPosition();
 			fired = true;
 		}
 	}
 
 	void update(double time) {
-		sf::Vector2f target = movementInput.getMovement(this, time * 400);
+		sf::Vector2f target = movementInput.getMovement(this, time * 300);
 		int targetType = collisionMap->getTile(target);
 
 		//Move player

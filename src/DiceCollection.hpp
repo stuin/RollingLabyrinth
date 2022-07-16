@@ -5,6 +5,8 @@
 #define PERMUTATIONS 720
 #define ROTATIONS 4096
 #define MAXSPINS 30
+#define GRIDSCALE 4
+#define GRIDSIZE 16*4
 
 class DiceCollection {
 private:
@@ -13,7 +15,7 @@ private:
 	TileMap *dungeon;
 
 public:
-	DiceCollection(TextureSet *textures) : grid(16*7, 8*7) {
+	DiceCollection(TextureSet *textures) : grid(9*7+2, 9*7+2) {
 		maps.reserve(MAPCOUNT);
 		for(int i = 1; i <= MAPCOUNT; i++) {
 			std::string name = "res/dice/map_a";
@@ -26,12 +28,25 @@ public:
 
 		//Load base tile map
 		dungeon = new TileMap(&textures->tilesTexture, 16, 16, new Indexer(&grid, displayIndex, 0), DIETOP);
-		dungeon->setScale(6, 6);
+		dungeon->setScale(GRIDSCALE, GRIDSCALE);
 		UpdateList::addNode(dungeon);
 
+		//Create grid border
+		int width = grid.getSize().x;
+		int height = grid.getSize().y;
+		for(int x = 0; x < width; x++) {
+			grid.setTile(x, 0, '&');
+			grid.setTile(x, height-1, '&');
+		}
+		for(int y = 0; y < height; y++) {
+			grid.setTile(0, y, '&');
+			grid.setTile(width-1, y, '&');
+		}
+
+		//Add starter room
 		GridMaker startGrid("res/dice/map_start.txt");
 		Indexer startIndex(&startGrid, displayIndex, 0);
-		overlayGrid(&startIndex, 28, 28);
+		overlayGrid(&startIndex, 4*7+1, 4*7+1);
 	}
 
 	int getNext(int size) {
@@ -63,7 +78,7 @@ public:
 	}
 
 	Indexer *getCollision() {
-		return new Indexer(&grid, collisionIndex, FLOOR, 96, 96);
+		return new Indexer(&grid, collisionIndex, FLOOR, GRIDSIZE, GRIDSIZE);
 	}
 
 	void overlayGrid(Indexer *index, unsigned int x, unsigned int y) {
