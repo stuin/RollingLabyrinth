@@ -28,40 +28,21 @@ public:
 	int treasure = 0;
 	bool endShown = false;
 
-	Player(sf::Texture *tilesTexture, sf::Texture *borderTexture) : 
+	Player(TextureSet *textures) : 
 		Node(PLAYER), movement(controlLayouts[2], INPUT, this), 
 		input(diceLayout, 4, INPUT, this),
-		holder(tilesTexture, borderTexture, this),
-		endNode(TITLE, sf::Vector2i(64, 32), false, this) {
+		holder(textures, this),
+		endNode(TITLE, sf::Vector2i(64, 32), true, this) {
 
 		collideWith(TREASURE);
 		collisionMap = holder.getCollision();
+		endNode.setTexture(textures->endTexture);
+		endNode.setPosition(0, -48);
 
 		//Place new tile
-		Indexer *_collisionMap = this->collisionMap;
-		Holder *_holder = &(this->holder);
-		Player *_player = this;
-		input.pressedFunc = [_holder, _player, _collisionMap](int i) {
-			if(_collisionMap->getTile(_player->getPosition()) == EDGE) {
-				int x = _player->getPosition().x / _collisionMap->getScale().x;
-				int y = _player->getPosition().y / _collisionMap->getScale().y;
-				if(i < _holder->getCount()) {
-					if(x % 7 == 0)
-						x -= 3;
-					else if(x % 7 == 6)
-						x += 3;
-					else if(y % 7 == 0)
-						y -= 3;
-					else if(y % 7 == 6)
-						y += 3;
-
-					x = (x / 7) * 7;
-					y = (y / 7) * 7;
-					std::cout << x << " " << y << "\n";
-
-					_holder->overlayGrid(i, x, y);
-				}
-			}
+		Holder *_holder = &holder;
+		input.pressedFunc = [_holder](int i) {
+			_holder->placeDie(i);
 		};
 	}
 
@@ -76,12 +57,8 @@ public:
 
 			//Check for win condition
 			if(targetType == EXIT) {
-				//Load the end texture
-				std::string endFile = "res/endscreen.png";
-				if(!endTexture.loadFromFile(endFile))
-					throw std::invalid_argument("End texture " + endFile + " not found");
-				endNode.setTexture(endTexture);
-				endNode.setPosition(0, -48);
+				//Show end screen
+				endNode.setHidden(false);
 				UpdateList::addNode(&endNode);
 
 				std::cout << "YOU WIN!!\n";

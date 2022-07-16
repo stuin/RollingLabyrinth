@@ -7,15 +7,15 @@
 #include "Player.hpp"
 
 int main() {
+	srand(time(NULL));
+
 	//Load node textures
-	sf::Texture playerTexture;
-	sf::Texture treasureTexture;
-	sf::Texture tilesTexture;
-	sf::Texture borderTexture;
-	UpdateList::loadTexture(&playerTexture, "res/upperplayer.png");
-	UpdateList::loadTexture(&treasureTexture, "res/treasure.png");
-	UpdateList::loadTexture(&tilesTexture, "res/dicetiles.png");
-	UpdateList::loadTexture(&borderTexture, "res/border.png");
+	TextureSet textures;
+	UpdateList::loadTexture(&textures.playerTexture, "res/upperplayer.png");
+	UpdateList::loadTexture(&textures.treasureTexture, "res/treasure.png");
+	UpdateList::loadTexture(&textures.tilesTexture, "res/dicetiles.png");
+	UpdateList::loadTexture(&textures.borderTexture, "res/border.png");
+	UpdateList::loadTexture(&textures.endTexture, "res/endscreen.png");
 
 	//Setup Light maps
 	/*Indexer lightMap(&grid, lightIndex, 0, 2, 2);
@@ -23,10 +23,10 @@ int main() {
 	lighting.addLightMap(&staticLights);
 	UpdateList::addNode(&staticLights);*/
 
-	//Upper area player
-	Player player(&tilesTexture, &borderTexture);
+	//Setup player
+	Player player(&textures);
 	player.setPosition(sf::Vector2f(2960, 2960));
-	player.setTexture(playerTexture);
+	player.setTexture(textures.playerTexture);
 	player.setScale(6, 6);
 	UpdateList::addNode(&player);
 

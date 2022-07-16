@@ -10,20 +10,19 @@ private:
 	TileMap *dungeon;
 
 public:
-	DiceCollection(sf::Texture *tileset) : grid(16*7, 8*7) {
+	DiceCollection(TextureSet *textures) : grid(16*7, 8*7) {
 		maps.reserve(MAPCOUNT);
 		for(int i = 1; i <= MAPCOUNT; i++) {
 			std::string name = "res/dice/map_a";
 			if(i < 10)
 				name += '0';
 			name += std::to_string(i) + ".txt";
-			//std::cout << name << "\n";
 			maps.emplace_back(name);
 			//maps.emplace_back(tileset, 16, 16, Indexer(&grid, displayIndex, 0), HOLDING);
 		}
 
 		//Load base tile map
-		dungeon = new TileMap(tileset, 16, 16, new Indexer(&grid, displayIndex, 0), DIETOP);
+		dungeon = new TileMap(&textures->tilesTexture, 16, 16, new Indexer(&grid, displayIndex, 0), DIETOP);
 		dungeon->setScale(6, 6);
 		UpdateList::addNode(dungeon);
 

@@ -2,6 +2,14 @@
 
 #include "Skyrmion/GridMaker.h"
 
+struct TextureSet {
+	sf::Texture playerTexture;
+	sf::Texture treasureTexture;
+	sf::Texture tilesTexture;
+	sf::Texture borderTexture;
+	sf::Texture endTexture;
+};
+
 enum CollisionType {
 	WALL,
 	FLOOR,
@@ -31,6 +39,7 @@ static const std::map<char, int> displayIndex = {
 	{'-', 2},
 	{'s', 2},
 	{'a', 3},
+	{'b', 3},
 	{'e', 3}
 };
 
@@ -41,6 +50,7 @@ static const std::map<char, int> collisionIndex = {
 	{'-', EDGE},
 	{'s', FLOOR},
 	{'a', FLOOR},
+	{'b', FLOOR},
 	{'e', FLOOR},
 };
 
