@@ -36,10 +36,14 @@ public:
 		UpdateList::addNode(this);
 		UpdateList::hideLayer(HOLDING, true);
 		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
+		UpdateList::addListener(this, sf::Event::KeyPressed);
 	}
 
 	void recieveEvent(sf::Event event, WindowSize *windowSize) {
-		if(event.mouseButton.button == sf::Mouse::Left && !isHidden()) {
+		if(event.type == sf::Event::KeyPressed) {
+			if(!startButton.isHidden() && event.key.code == sf::Keyboard::Space)
+				startGame();
+		} else if(event.mouseButton.button == sf::Mouse::Left && !isHidden()) {
 			sf::Vector2f pos = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y);
 			if(startButton.getRect().contains(pos))
 				startGame();

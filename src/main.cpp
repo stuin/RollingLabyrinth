@@ -2,7 +2,6 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "Skyrmion/LightMap.h"
 #include "indexes.h"
 #include "Player.hpp"
 
@@ -40,7 +39,6 @@ int main() {
 
 	//Finish engine setup
 	UpdateList::setCamera(&player, sf::Vector2f(1920, 1080));
-	UpdateList::startEngine("The Path Below", TITLE);
-
+	UpdateList::startEngine("Rolling Labyrinth", TITLE);
 	return 0;
 }

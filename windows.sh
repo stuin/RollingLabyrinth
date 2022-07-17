@@ -1,6 +1,6 @@
-files="src/main.cpp src/Skyrmion/GridMaker.cpp src/Skyrmion/Node.cpp src/Skyrmion/UpdateList.cpp  src/Skyrmion/LightMap.cpp"
+files="src/main.cpp src/Skyrmion/GridMaker.cpp src/Skyrmion/Node.cpp src/Skyrmion/UpdateList.cpp"
 options="-pthread -O3 -std=c++17 -Wall -fpermissive -mwindows -static -DSFML_STATIC"
-libs="-lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lwinmm -lgdi32 -lopengl32 -lfreetype"
+libs="-lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lwinmm -lgdi32 -lopengl32"
 
 output="RollingLabyrinth"
 

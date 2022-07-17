@@ -6,8 +6,8 @@
 
 sf::Keyboard::Key controlLayouts[3][4] = {
 	{sf::Keyboard::W, sf::Keyboard::S, sf::Keyboard::A, sf::Keyboard::D},
-	{sf::Keyboard::Up, sf::Keyboard::Down, sf::Keyboard::Left, sf::Keyboard::Right},
-	{sf::Keyboard::W, sf::Keyboard::R, sf::Keyboard::A, sf::Keyboard::S}
+	{sf::Keyboard::W, sf::Keyboard::R, sf::Keyboard::A, sf::Keyboard::S},
+	{sf::Keyboard::Up, sf::Keyboard::Down, sf::Keyboard::Left, sf::Keyboard::Right}
 };
 
 sf::Keyboard::Key diceLayout[DICEMAX] = {
@@ -17,6 +17,7 @@ sf::Keyboard::Key diceLayout[DICEMAX] = {
 
 class Player : public Node {
 	DirectionHandler movementInput;
+	DirectionHandler fireInput;
 	InputHandler placeInput;
 	Indexer *collisionMap;
 
@@ -24,13 +25,14 @@ class Player : public Node {
 	Menu menu;
 	TextureSet *textures;
 
-	sf::Vector2f fireAt;
+	sf::Vector2f fireAt = sf::Vector2f(1, 0);
 	bool fired = false;
 
 public:
 	Player(TextureSet *_textures) : Node(PLAYER, sf::Vector2i(10, 11)), 
-	movementInput(controlLayouts[0], INPUT, this), placeInput(diceLayout, DICEMAX, INPUT, this),
-	holder(_textures, this), menu(_textures, this), textures(_textures) {
+	movementInput(controlLayouts[0], INPUT, this), fireInput(controlLayouts[2], INPUT, this), 
+	placeInput(diceLayout, DICEMAX, INPUT, this), holder(_textures, this), 
+	menu(_textures, this), textures(_textures) {
 
 		collideWith(COLLECTABLE);
 		collideWith(ENEMY);
@@ -43,12 +45,18 @@ public:
 		};
 
 		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
+		UpdateList::addListener(this, sf::Event::KeyPressed);
 	}
 
 	void recieveEvent(sf::Event event, WindowSize *windowSize) {
-		if(event.mouseButton.button == sf::Mouse::Left) {
-			fireAt = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y) - getGPosition();
-			fired = true;
+		if(event.type == sf::Event::MouseButtonPressed) {
+			if(event.mouseButton.button == sf::Mouse::Left) {
+				fireAt = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y) - getGPosition();
+				fired = true;
+			}
+		} else {
+			if(event.key.code == sf::Keyboard::Space)
+				fired = true;
 		}
 	}
 
@@ -63,6 +71,11 @@ public:
 		//Win game
 		if(targetType == EXIT)
 			menu.showEnd(true);
+
+		//Aim at arrow keys
+		sf::Vector2f target2 = fireInput.getDirection();
+		if(target2 != sf::Vector2f(0, 0))
+			fireAt = target2;
 
 		//Fire bullet
 		if(fired) {
