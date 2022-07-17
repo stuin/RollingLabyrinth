@@ -17,13 +17,11 @@ int main() {
 	UpdateList::loadTexture(&textures.diceTexture, "res/dice.png");
 	UpdateList::loadTexture(&textures.tilesTexture, "res/dicetiles.png");
 	UpdateList::loadTexture(&textures.borderTexture, "res/border.png");
-	UpdateList::loadTexture(&textures.endTexture, "res/endscreen.png");
-
-	//Setup Light maps
-	/*Indexer lightMap(&grid, lightIndex, 0, 2, 2);
-	LightMap staticLights(8, 8, 0, 0.1, lightMap, LIGHT, true);
-	lighting.addLightMap(&staticLights);
-	UpdateList::addNode(&staticLights);*/
+	UpdateList::loadTexture(&textures.winTexture, "res/winscreen.png");
+	UpdateList::loadTexture(&textures.loseTexture, "res/losescreen.png");
+	UpdateList::loadTexture(&textures.titleTexture, "res/titlescreen.png");
+	UpdateList::loadTexture(&textures.startTexture, "res/startbutton.png");
+	UpdateList::loadTexture(&textures.quitTexture, "res/quitbutton.png");
 
 	//Setup player
 	Player player(&textures);
@@ -33,7 +31,7 @@ int main() {
 	player.setScale(GRIDSCALE, GRIDSCALE);
 	UpdateList::addNode(&player);
 
-	UpdateList::staticLayer(TABLE);
+	//Lock UI Layers
 	UpdateList::staticLayer(DIETOP);
 	UpdateList::staticLayer(BORDER);
 	UpdateList::staticLayer(HOLDING);

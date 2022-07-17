@@ -8,7 +8,7 @@
 #define GRIDSCALE 4
 #define GRIDSIZE 16*4
 #define GRIDWIDTH 7
-#define STARTROOM 4*7+1
+#define STARTROOM 3*7+1
 
 class DiceCollection {
 private:
@@ -51,8 +51,8 @@ public:
 		overlayGrid(&startIndex, STARTROOM, STARTROOM);
 
 		//Find location on edge
-		int y = getNext(GRIDWIDTH) + 1;
-		int x = getNext(GRIDWIDTH) + 1;
+		int y = getNext(GRIDWIDTH);
+		int x = getNext(GRIDWIDTH);
 		switch(getNext(4)) {
 			case 0:
 				y = 0;
@@ -71,14 +71,14 @@ public:
 		//Add exit room
 		GridMaker endGrid("res/dice/map_end.txt");
 		Indexer endIndex(&endGrid, displayIndex, 0);
-		overlayGrid(&startIndex, x, y);
+		overlayGrid(&endIndex, (x*7)+1, (y*7)+1);
 	}
 
 	int getNext(int size) {
 		return rand() % size;
 	}
 
-	int getNext(int order, int rotation, int index) {
+	int getPerm(int order, int rotation, int index) {
 		int perm[6] = {5, 4, 3, 2, 1, 0};
 		rotation *= 4;
 		index %= 6;

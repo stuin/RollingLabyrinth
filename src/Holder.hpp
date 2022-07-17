@@ -1,5 +1,6 @@
 #include "Skyrmion/UpdateList.h"
 #include "DiceCollection.hpp"
+#include "Collectable.hpp"
 #include "Enemy.hpp"
 
 #define DICEMAX 8
@@ -43,25 +44,33 @@ public:
 
 		UpdateList::addNode(this);
 		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
+	}
 
-		/*for(int j = 0; j < 10; j++) {
-			for(int i = 0; i < 6; i++)
-				std::cout << collection.getNext(j,j,i) << " ";
-			std::cout << "\n";
-		}*/
+	void recieveEvent(sf::Event event, WindowSize *windowSize) {
+		if(event.mouseButton.button == sf::Mouse::Left) {
+			sf::Vector2f pos = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y);
+			if(getRect().contains(pos)) {
+				for(int i = 0; i < count; i++) {
+					if(dice[i].getRect().contains(pos))
+						placeDie(i);
+				}
+			}
+		}
 	}
 
 	Indexer *getCollision() {
 		return collection.getCollision();
 	}
 
-	void addDie() {
-		if(count < MAPCOUNT) {
+	bool addDie() {
+		if(count < DICEMAX) {
 			values[count] = collection.getNext(MAPCOUNT);
 			dice[count].setIndex(collection.getDie(values[count]));
 			dice[count].setHidden(false);
 			count++;
+			return true;
 		}
+		return false;
 	}
 
 	int deleteDie(int i) {
@@ -86,13 +95,11 @@ public:
 		x = (x + pos.x) * GRIDSIZE + GRIDSIZE/2;
 		y = (y + pos.y) * GRIDSIZE + GRIDSIZE/2;
 
-		if(c == 'a') {
-			Node *t = new Node(COLLECTABLE, sf::Vector2i(14, 14));
-			t->setTexture(textures->diceTexture);
-			t->setTextureRect(sf::IntRect(0, 0, 14, 14));
-			t->setScale(2, 2);
-			t->setPosition(x, y);
-			UpdateList::addNode(t);
+		if(c == 'a' || collection.getNext(8) == 0) {
+			Collectable *d = new Collectable(&collection);
+			d->setTexture(textures->diceTexture);
+			d->setPosition(x, y);
+			UpdateList::addNode(d);
 		} else if(c == 'b') {
 			Enemy *t = new Enemy(getParent(), collection.getCollision());
 			t->setTexture(textures->enemyTexture);

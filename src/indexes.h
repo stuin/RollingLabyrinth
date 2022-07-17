@@ -9,7 +9,11 @@ struct TextureSet {
 	sf::Texture diceTexture;
 	sf::Texture tilesTexture;
 	sf::Texture borderTexture;
-	sf::Texture endTexture;
+	sf::Texture winTexture;
+	sf::Texture loseTexture;
+	sf::Texture titleTexture;
+	sf::Texture startTexture;
+	sf::Texture quitTexture;
 };
 
 enum CollisionType {
@@ -21,16 +25,14 @@ enum CollisionType {
 };
 
 enum CollisionLayer {
-	TABLE,
-	DIESIDES,
 	DIETOP,
 	COLLECTABLE,
 	ENEMY,
 	BULLET,
 	PLAYER,
-	LIGHT,
 	BORDER,
 	HOLDING,
+	SHADING,
 	INPUT,
 	TITLE
 };
@@ -44,7 +46,7 @@ static const std::map<char, int> displayIndex = {
 	{'s', 3},
 	{'a', 3},
 	{'b', 3},
-	{'e', 3}
+	{'e', 4}
 };
 
 static const std::map<char, int> collisionIndex = {

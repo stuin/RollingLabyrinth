@@ -2,6 +2,7 @@
 #include "Skyrmion/TileMap.hpp"
 #include "Holder.hpp"
 #include "Bullet.hpp"
+#include "Menu.hpp"
 
 sf::Keyboard::Key controlLayouts[3][4] = {
 	{sf::Keyboard::W, sf::Keyboard::S, sf::Keyboard::A, sf::Keyboard::D},
@@ -18,27 +19,22 @@ class Player : public Node {
 	DirectionHandler movementInput;
 	InputHandler placeInput;
 	Indexer *collisionMap;
-	TextureSet *textures;
 
 	Holder holder;
-	Node endNode;
+	Menu menu;
+	TextureSet *textures;
 
 	sf::Vector2f fireAt;
 	bool fired = false;
 
 public:
-	bool endShown = false;
-
-	Player(TextureSet *textures) : Node(PLAYER, sf::Vector2i(10, 10)), 
+	Player(TextureSet *_textures) : Node(PLAYER, sf::Vector2i(10, 11)), 
 	movementInput(controlLayouts[2], INPUT, this), placeInput(diceLayout, DICEMAX, INPUT, this),
-	holder(textures, this), endNode(TITLE, sf::Vector2i(283, 99), true, this) {
+	holder(_textures, this), menu(_textures, this), textures(_textures) {
 
 		collideWith(COLLECTABLE);
 		collideWith(ENEMY);
 		collisionMap = holder.getCollision();
-
-		this->textures = textures;
-		
 
 		//Place new tile
 		Holder *_holder = &holder;
@@ -65,18 +61,8 @@ public:
 			setPosition(target);
 
 		//Win game
-		if(targetType == EXIT) {
-			//Show end screen
-			endNode.setTexture(textures->endTexture);
-			endNode.setScale(3, 3);
-			endNode.setPosition(0, -48);
-			endNode.setHidden(false);
-			UpdateList::addNode(&endNode);
-			UpdateList::pauseLayer(PLAYER);
-			UpdateList::pauseLayer(BULLET);
-			UpdateList::pauseLayer(ENEMY);
-		}
-
+		if(targetType == EXIT)
+			menu.showEnd(true);
 
 		//Fire bullet
 		if(fired) {
@@ -91,20 +77,13 @@ public:
 
 	void collide(Node *object) {
 		if(object->getLayer() == COLLECTABLE) {
-			holder.addDie();
-			object->setDelete();
+			if(holder.addDie())
+				object->setDelete();
+			else
+				setPosition(getGPosition()+getGPosition()-object->getGPosition());
 		} else if(object->getLayer() == ENEMY) {
-			if(holder.deleteDie(-1) == -1) {
-				//Show end screen
-				endNode.setTexture(textures->endTexture);
-				endNode.setScale(3, 3);
-				endNode.setPosition(0, -48);
-				endNode.setHidden(false);
-				UpdateList::addNode(&endNode);
-				UpdateList::pauseLayer(PLAYER);
-				UpdateList::pauseLayer(BULLET);
-				UpdateList::pauseLayer(ENEMY);
-			}
+			if(holder.deleteDie(-1) == -1)
+				menu.showEnd(false);
 			object->setDelete();
 		}
 	}
