@@ -7,7 +7,7 @@
 #define GRIDSCALE 4
 #define GRIDSIZE 16*4
 #define GRIDWIDTH 9
-#define STARTROOM 5*7+1
+#define STARTROOM 4*7+1
 
 class DiceCollection {
 private:

@@ -39,7 +39,7 @@ public:
 	}
 
 	void recieveEvent(sf::Event event, WindowSize *windowSize) {
-		if(event.mouseButton.button == sf::Mouse::Left) {
+		if(event.mouseButton.button == sf::Mouse::Left && !isHidden()) {
 			sf::Vector2f pos = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y);
 			if(startButton.getRect().contains(pos))
 				startGame();

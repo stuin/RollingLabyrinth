@@ -77,10 +77,8 @@ public:
 
 	void collide(Node *object) {
 		if(object->getLayer() == COLLECTABLE) {
-			if(holder.addDie())
-				object->setDelete();
-			else
-				setPosition(getGPosition()+getGPosition()-object->getGPosition());
+			holder.addDie();
+			object->setDelete();
 		} else if(object->getLayer() == ENEMY) {
 			if(holder.deleteDie(-1) == -1)
 				menu.showEnd(false);

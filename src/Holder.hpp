@@ -97,13 +97,11 @@ public:
 		return collection.getCollision();
 	}
 
-	bool addDie() {
-		if(count < DICEMAX) {
-			values[count] = dice[count].start(&collection);
-			count++;
-			return true;
-		}
-		return false;
+	void addDie() {
+		if(count >= DICEMAX)
+			deleteDie(-1);
+		values[count] = dice[count].start(&collection);
+		count++;
 	}
 
 	int deleteDie(int i) {
