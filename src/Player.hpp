@@ -29,7 +29,7 @@ class Player : public Node {
 
 public:
 	Player(TextureSet *_textures) : Node(PLAYER, sf::Vector2i(10, 11)), 
-	movementInput(controlLayouts[2], INPUT, this), placeInput(diceLayout, DICEMAX, INPUT, this),
+	movementInput(controlLayouts[0], INPUT, this), placeInput(diceLayout, DICEMAX, INPUT, this),
 	holder(_textures, this), menu(_textures, this), textures(_textures) {
 
 		collideWith(COLLECTABLE);

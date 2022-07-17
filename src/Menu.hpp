@@ -51,7 +51,7 @@ public:
 	void startGame() {
 		titleText.setHidden();
 		startButton.setHidden();
-		quitButton.setHidden();
+		quitButton.setPosition(0, 200);
 		UpdateList::hideLayer(HOLDING, false);
 		pauseGame(false);
 	}
@@ -62,6 +62,7 @@ public:
 		UpdateList::pauseLayer(BULLET, pause);
 		UpdateList::pauseLayer(ENEMY, pause);
 		UpdateList::pauseLayer(BORDER, pause);
+		UpdateList::pauseLayer(HOLDING, pause);
 	}
 
 	void showEnd(bool win) {

@@ -4,11 +4,10 @@
 #define DIEWIDTH 112
 #define PERMUTATIONS 720
 #define ROTATIONS 4096
-#define MAXSPINS 30
 #define GRIDSCALE 4
 #define GRIDSIZE 16*4
-#define GRIDWIDTH 7
-#define STARTROOM 3*7+1
+#define GRIDWIDTH 9
+#define STARTROOM 5*7+1
 
 class DiceCollection {
 private:

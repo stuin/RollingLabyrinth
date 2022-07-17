@@ -5,15 +5,51 @@
 
 #define DICEMAX 8
 #define DICESTART 3
+#define DICEMAXTIME 0.2
+
+class DiceRoller {
+public:
+	AnimatedTileMap *map = NULL;
+	int perm = 0;
+	int rotation = 0;
+	int final = 0;
+
+	DiceRoller(AnimatedTileMap *map) {
+		this->map = map;
+	}
+
+	int start(DiceCollection *collection) {
+		this->final = collection->getNext(6);
+		this->perm = collection->getNext(PERMUTATIONS);
+		this->rotation = collection->getNext(ROTATIONS);
+
+		for(int j = 0; j < 6; j++)
+			map->getFrame(j)->setIndex(collection->getDie(collection->getPerm(perm, rotation, j)));
+		map->setCurrentFrame(0);
+		map->setHidden(false);
+		map->setPauseAfter(6 + final);
+		map->setPaused(false);
+
+		return collection->getPerm(perm, rotation, final);
+	}
+
+	void copy(DiceRoller *other, DiceCollection *collection) {
+		this->final = other->final;
+		this->perm = other->perm;
+		this->rotation = other->rotation;
+
+		for(int j = 0; j < 6; j++)
+			map->getFrame(j)->setIndex(collection->getDie(collection->getPerm(perm, rotation, j)));
+		map->setPaused(true);
+		map->setCurrentFrame(final);
+	}
+};
 
 class Holder : public Node {
 private:
 	int values[DICEMAX];
-	std::vector<TileMap> dice;
+	std::vector<DiceRoller> dice;
 	int count = DICESTART;
-
-	AnimatedTileMap *rolling;
-	int endFrame = 0;
 
 	DiceCollection collection;
 	TextureSet *textures;
@@ -27,19 +63,18 @@ public:
 		//Set up holding dice
 		dice.reserve(DICEMAX);
 		for(int i = 0; i < DICEMAX; i++) {
-			//dice.emplace_back(HOLDING, sf::Vector2i(DIEWIDTH, DIEWIDTH), true, this);
-			dice.emplace_back(&textures->tilesTexture, 16, 16, collection.getDie(0), HOLDING);
-			dice[i].setHidden(true);
-			dice[i].setParent(this);
-			dice[i].setPosition((i-4)*(DIEWIDTH+16)+16, -56);
-			UpdateList::addNode(&(dice[i]));
+			AnimatedTileMap *map = new AnimatedTileMap(sf::Vector2i(16*7, 16*7), DICEMAXTIME, HOLDING);
+			for(int j = 0; j < 6; j++)
+				map->addFrame(new TileMap(&textures->tilesTexture, 
+					16, 16, collection.getDie(0), HOLDING));
+			map->setHidden(true);
+			map->setParent(this);
+			map->setPosition((i-4)*(DIEWIDTH+16)+16, -56);
+			dice.emplace_back(map);
+			UpdateList::addNode(map);
 
-			if(i < DICESTART) {
-				values[i] = collection.getNext(MAPCOUNT);
-				//dice[i].setTexture(collection.getTexture(values[i]));
-				dice[i].setIndex(collection.getDie(values[i]));
-				dice[i].setHidden(false);
-			}
+			if(i < DICESTART)
+				values[i] = dice[i].start(&collection);
 		}
 
 		UpdateList::addNode(this);
@@ -51,7 +86,7 @@ public:
 			sf::Vector2f pos = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y);
 			if(getRect().contains(pos)) {
 				for(int i = 0; i < count; i++) {
-					if(dice[i].getRect().contains(pos))
+					if(dice[i].map->getRect().contains(pos))
 						placeDie(i);
 				}
 			}
@@ -64,9 +99,7 @@ public:
 
 	bool addDie() {
 		if(count < DICEMAX) {
-			values[count] = collection.getNext(MAPCOUNT);
-			dice[count].setIndex(collection.getDie(values[count]));
-			dice[count].setHidden(false);
+			values[count] = dice[count].start(&collection);
 			count++;
 			return true;
 		}
@@ -84,10 +117,10 @@ public:
 		//Shift held dice
 		for(int j = i; j < count - 1; j++) {
 			values[j] = values[j + 1];
-			dice[j].setIndex(collection.getDie(values[j]));
+			dice[j].copy(&dice[j + 1], &collection);
 		}
 		count--;
-		dice[count].setHidden(true);
+		dice[count].map->setHidden(true);
 		return count;
 	}
 
