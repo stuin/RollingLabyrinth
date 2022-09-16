@@ -2,7 +2,6 @@
 #include "Skyrmion/TileMap.hpp"
 #include "Holder.hpp"
 #include "Bullet.hpp"
-#include "Menu.hpp"
 
 #define MINFIRERATE 0.3f;
 
@@ -18,7 +17,6 @@ class Player : public Node {
 	Indexer *collisionMap;
 
 	Holder holder;
-	Menu menu;
 	TextureSet *textures;
 
 	sf::Vector2f fireDir = sf::Vector2f(1, 0);
@@ -37,8 +35,8 @@ class Player : public Node {
 public:
 	Player(TextureSet *_textures) : Node(PLAYER, sf::Vector2i(10, 11)), 
 	movementInput("/movement", INPUT, this), fireInput("/weapon", INPUT, this), 
-	placeInput(diceLayout, DICEMAX, INPUT, this), holder(_textures, this), 
-	menu(_textures, this), textures(_textures) {
+	placeInput(diceLayout, DICEMAX, INPUT, this), 
+	holder(_textures, this), textures(_textures) {
 
 		collideWith(COLLECTABLE);
 		collideWith(ENEMY);
@@ -47,6 +45,8 @@ public:
 		//Position player
 		int cord = (STARTROOM+3)*GRIDSIZE+GRIDSIZE/2;
 		setPosition(sf::Vector2f(cord, cord));
+		setTexture(_textures->playerTexture);
+		setScale(GRIDSCALE, GRIDSCALE);
 
 		//Place tile listener
 		Holder *_holder = &holder;
@@ -62,7 +62,9 @@ public:
 				*fired = true;
 		};
 
+		UpdateList::addNode(this);
 		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
+		UpdateList::setCamera(this, sf::Vector2f(1920, 1080));
 	}
 
 	void recieveEvent(sf::Event event, WindowSize *windowSize) {
@@ -85,7 +87,7 @@ public:
 
 		//Win game
 		if(targetType == EXIT)
-			menu.showEnd(true);
+			UpdateList::sendMessage(MENU, SHOW_WIN);
 
 		//Aim at arrow keys
 		sf::Vector2f target2 = fireInput.getDirection();
@@ -108,7 +110,7 @@ public:
 			object->setDelete();
 		} else if(object->getLayer() == ENEMY) {
 			if(holder.deleteDie(-1) == -1)
-				menu.showEnd(false);
+				UpdateList::sendMessage(MENU, SHOW_LOST);
 			object->setDelete();
 		}
 	}
@@ -120,3 +122,8 @@ public:
 		}
 	}
 };
+
+void spawnPlayer(TextureSet *_textures) {
+	Player *player = new Player(_textures);
+	spawnMenu(_textures, player);
+}

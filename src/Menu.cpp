@@ -1,3 +1,6 @@
+#include "Skyrmion/UpdateList.h"
+#include "spawners.h"
+
 class Menu : public DrawNode {
 private:
 	sf::RectangleShape fade;
@@ -11,7 +14,7 @@ private:
 
 public:
 	Menu(TextureSet *_textures, Node *parent) 
-	: DrawNode(fade, SHADING, sf::Vector2i(2000, 2000), parent), 
+	: DrawNode(fade, MENU, sf::Vector2i(2000, 2000), parent), 
 	endText(TITLE, sf::Vector2i(283, 99), true, this), titleText(TITLE, sf::Vector2i(328, 158), false, this), 
 	startButton(TITLE, sf::Vector2i(156, 75), false, this), restartButton(TITLE, sf::Vector2i(156, 75), false, this), 
 	quitButton(TITLE, sf::Vector2i(156, 75), false, this) {
@@ -64,6 +67,13 @@ public:
 		}
 	}
 
+	void recieveMessage(int id) {
+		if(id == SHOW_WIN)
+			showEnd(true);
+		else if(id == SHOW_LOST)
+			showEnd(false);
+	}
+
 	void startGame() {
 		titleText.setHidden();
 		startButton.setHidden();
@@ -99,3 +109,7 @@ public:
 		pauseGame(true);
 	}
 };
+
+void spawnMenu(TextureSet *_textures, Node *parent) {
+	Menu *menu = new Menu(_textures, parent);
+}

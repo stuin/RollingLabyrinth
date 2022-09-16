@@ -18,7 +18,9 @@ struct TextureSet {
 
 enum Messages {
 	CLEAR_ENTITIES,
-	RESET_MAP
+	RESET_MAP,
+	SHOW_WIN,
+	SHOW_LOST
 };
 
 enum CollisionType {
@@ -37,7 +39,7 @@ enum CollisionLayer {
 	PLAYER,
 	BORDER,
 	HOLDING,
-	SHADING,
+	MENU,
 	INPUT,
 	TITLE
 };

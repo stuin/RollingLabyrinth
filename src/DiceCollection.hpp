@@ -1,4 +1,5 @@
 #include "Skyrmion/AnimatedTileMap.hpp"
+#include "spawners.h"
 
 #define MAPCOUNT 24
 #define DIEWIDTH 112
