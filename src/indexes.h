@@ -16,6 +16,11 @@ struct TextureSet {
 	sf::Texture quitTexture;
 };
 
+enum Messages {
+	CLEAR_ENTITIES,
+	RESET_MAP
+};
+
 enum CollisionType {
 	WALL,
 	EMPTY,

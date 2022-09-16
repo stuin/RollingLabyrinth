@@ -32,6 +32,12 @@ public:
 		dungeon->setScale(GRIDSCALE, GRIDSCALE);
 		UpdateList::addNode(dungeon);
 
+		rebuildMap();
+	}
+
+	void rebuildMap() {
+		grid.clearTiles(' ');
+
 		//Create grid border
 		int width = grid.getSize().x;
 		int height = grid.getSize().y;

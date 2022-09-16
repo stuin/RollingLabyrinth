@@ -19,4 +19,9 @@ public:
 				setPosition(target);
 		}
 	}
+
+	void recieveMessage(int id) {
+		if(id == CLEAR_ENTITIES)
+			setDelete();
+	}
 };

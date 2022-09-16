@@ -25,8 +25,6 @@ int main() {
 
 	//Setup player
 	Player player(&textures);
-	int cord = (STARTROOM+3)*GRIDSIZE+GRIDSIZE/2;
-	player.setPosition(sf::Vector2f(cord, cord));
 	player.setTexture(textures.playerTexture);
 	player.setScale(GRIDSCALE, GRIDSCALE);
 	UpdateList::addNode(&player);

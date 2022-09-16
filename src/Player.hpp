@@ -44,6 +44,10 @@ public:
 		collideWith(ENEMY);
 		collisionMap = holder.getCollision();
 
+		//Position player
+		int cord = (STARTROOM+3)*GRIDSIZE+GRIDSIZE/2;
+		setPosition(sf::Vector2f(cord, cord));
+
 		//Place tile listener
 		Holder *_holder = &holder;
 		placeInput.pressedFunc = [_holder](int i) {
@@ -106,6 +110,13 @@ public:
 			if(holder.deleteDie(-1) == -1)
 				menu.showEnd(false);
 			object->setDelete();
+		}
+	}
+
+	void recieveMessage(int id) {
+		if(id == RESET_MAP) {
+			int cord = (STARTROOM+3)*GRIDSIZE+GRIDSIZE/2;
+			setPosition(sf::Vector2f(cord, cord));
 		}
 	}
 };

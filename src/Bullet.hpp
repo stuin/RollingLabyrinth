@@ -24,4 +24,9 @@ public:
 		other->setDelete();
 		setDelete();
 	}
+
+	void recieveMessage(int id) {
+		if(id == CLEAR_ENTITIES)
+			setDelete();
+	}
 };
