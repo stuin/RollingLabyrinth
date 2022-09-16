@@ -6,6 +6,7 @@
 #include "Player.hpp"
 
 int main() {
+	Settings::loadSettings("res/settings.json");
 	srand(time(NULL));
 
 	//Load node textures
