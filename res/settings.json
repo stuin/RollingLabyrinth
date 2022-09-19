@@ -1,0 +1,14 @@
+{
+	"movement": {
+		"up": "W",
+		"down": "R",
+		"left": "A",
+		"right": "S"
+	},
+	"weapon": {
+		"up": "Up",
+		"down": "Down",
+		"left": "Left",
+		"right": "Right"
+	}
+}
