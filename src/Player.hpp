@@ -6,9 +6,11 @@
 
 #define MINFIRERATE 0.3f;
 
-int diceLayout[DICEMAX] = {
-	sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3, sf::Keyboard::Num4,
-	sf::Keyboard::Num5, sf::Keyboard::Num6, sf::Keyboard::Num7, sf::Keyboard::Num8
+std::vector<std::string> diceLayout = {
+	"/dice/keyboard/1", "/dice/keyboard/2", "/dice/keyboard/3", "/dice/keyboard/4",
+	"/dice/keyboard/5", "/dice/keyboard/6", "/dice/keyboard/7", "/dice/keyboard/8",
+	"/dice/joystick/1", "/dice/joystick/2", "/dice/joystick/3", "/dice/joystick/4",
+	"/dice/joystick/5", "/dice/joystick/6", "/dice/joystick/7", "/dice/joystick/8"
 };
 
 class Player : public Node {
@@ -21,23 +23,33 @@ class Player : public Node {
 	Menu menu;
 	TextureSet *textures;
 
-	sf::Vector2f fireDir = sf::Vector2f(1, 0);
 	double fireTime = 0;
-	bool fired = false;
+	sf::Vector2f mouseDir = sf::Vector2f(0, 1);
 
-	void spawnBullet() {
-		//Create bullet
-		Bullet *bullet = new Bullet(fireDir, collisionMap);
-		bullet->setTexture(textures->bulletTexture);
-		bullet->setScale(1.5, 1.5);
-		bullet->setPosition(getGPosition());
-		UpdateList::addNode(bullet);
+	void spawnBullet(bool mouse) {
+		if(fireTime <= 0) {
+			sf::Vector2f dir = fireInput.getDirection();
+			if(mouse)
+				dir = mouseDir;
+			if(dir == sf::Vector2f(0, 0))
+				dir = sf::Vector2f(0, 1);
+
+			//Create bullet
+			Bullet *bullet = new Bullet(dir, collisionMap);
+			bullet->setTexture(textures->bulletTexture);
+			bullet->setScale(1.5, 1.5);
+			bullet->setPosition(getGPosition());
+			UpdateList::addNode(bullet);
+
+			fireTime = MINFIRERATE;
+		}
 	}
 
 public:
+
 	Player(TextureSet *_textures) : Node(PLAYER, sf::Vector2i(10, 11)), 
 	movementInput("/movement", INPUT, this), fireInput("/weapon", INPUT, this), 
-	placeInput(diceLayout, DICEMAX, INPUT, this), holder(_textures, this), 
+	placeInput(diceLayout, INPUT, this), holder(_textures, this), 
 	menu(_textures, this), textures(_textures) {
 
 		collideWith(COLLECTABLE);
@@ -47,28 +59,21 @@ public:
 		//Place tile listener
 		Holder *_holder = &holder;
 		placeInput.pressedFunc = [_holder](int i) {
-			_holder->placeDie(i);
+			_holder->placeDie(i % DICEMAX); 
 		};
 
 		//Fire listener
-		bool *fired = &this->fired;
-		double *fireTime = &this->fireTime;
-		fireInput.heldFunc = [fired, fireTime](int i) {
-			if(*fireTime <= 0)
-				*fired = true;
-		};
+		Player *_player = this;
+		int fireMouse = fireInput.addKey(MOUSE_OFFSET+0);
+		fireInput.heldFunc = [fireMouse, _player](int i) {
+			_player->spawnBullet(i == fireMouse);
+		}; 
 
-		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
+		UpdateList::addListener(this, sf::Event::MouseMoved);
 	}
 
 	void recieveEvent(sf::Event event, WindowSize *windowSize) {
-		if(event.mouseButton.button == sf::Mouse::Left) {
-			fireDir = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y) - getGPosition();
-			if(fireTime <= 0) {
-				spawnBullet();
-				fireTime = MINFIRERATE;
-			}
-		}
+		mouseDir = windowSize->worldPos(event.mouseMove.x, event.mouseMove.y) - getGPosition();
 	}
 
 	void update(double time) {
@@ -79,23 +84,13 @@ public:
 		if(targetType != WALL && targetType != EMPTY)
 			setPosition(target);
 
+		//Run timer
+		if(fireTime > 0)
+			fireTime -= time;
+
 		//Win game
 		if(targetType == EXIT)
 			menu.showEnd(true);
-
-		//Aim at arrow keys
-		sf::Vector2f target2 = fireInput.getDirection();
-		if(target2 != sf::Vector2f(0, 0))
-			fireDir = target2;
-
-		//Fire bullet
-		if((fireTime -= time) <= 0 && fired) {
-			spawnBullet();
-
-			//Reset timer
-			fireTime = MINFIRERATE;
-			fired = false;
-		}
 	}
 
 	void collide(Node *object) {

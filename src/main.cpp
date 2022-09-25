@@ -10,7 +10,7 @@ int main() {
 	srand(time(NULL));
 
 	//Load node textures
-	TextureSet textures;
+	TextureSet textures; 
 	UpdateList::loadTexture(&textures.playerTexture, "res/player.png");
 	UpdateList::loadTexture(&textures.enemyTexture, "res/enemy.png");
 	UpdateList::loadTexture(&textures.bulletTexture, "res/bullet.png");
@@ -35,8 +35,8 @@ int main() {
 	UpdateList::staticLayer(DIETOP);
 	UpdateList::staticLayer(BORDER);
 	UpdateList::staticLayer(HOLDING);
-	UpdateList::staticLayer(PLAYER);
-	UpdateList::staticLayer(INPUT);
+	UpdateList::staticLayer(PLAYER); 
+	UpdateList::staticLayer(INPUT); 
 
 	//Finish engine setup
 	UpdateList::setCamera(&player, sf::Vector2f(1920, 1080));

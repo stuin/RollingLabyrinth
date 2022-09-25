@@ -3,12 +3,42 @@
 		"up": "W",
 		"down": "R",
 		"left": "A",
-		"right": "S"
+		"right": "S",
+		"joystick": 3
 	},
 	"weapon": {
 		"up": "Up",
 		"down": "Down",
 		"left": "Left",
-		"right": "Right"
+		"right": "Right",
+		"joystick": 2
+	},
+	"dice": {
+		"keyboard": {
+			"1": "Num1",
+			"2": "Num2",
+			"3": "Num3",
+			"4": "Num4",
+			"5": "Num5",
+			"6": "Num6",
+			"7": "Num7",
+			"8": "Num8"
+		},
+		"joystick": {
+			"1": "JoystickY",
+			"2": "JoystickB",
+			"3": "JoystickA",
+			"4": "JoystickX"
+		}
+	},
+	"menu": {
+		"keyboard": {
+			"start": "Space",
+			"exit": "Escape"
+		},
+		"joystick": {
+			"start": "JoystickA",
+			"exit": "JoystickStart"
+		}
 	}
 }
