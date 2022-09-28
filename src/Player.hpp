@@ -7,10 +7,8 @@
 #define MINFIRERATE 0.3f;
 
 std::vector<std::string> diceLayout = {
-	"/dice/keyboard/1", "/dice/keyboard/2", "/dice/keyboard/3", "/dice/keyboard/4",
-	"/dice/keyboard/5", "/dice/keyboard/6", "/dice/keyboard/7", "/dice/keyboard/8",
-	"/dice/joystick/1", "/dice/joystick/2", "/dice/joystick/3", "/dice/joystick/4",
-	"/dice/joystick/5", "/dice/joystick/6", "/dice/joystick/7", "/dice/joystick/8"
+	"/dice/1", "/dice/2", "/dice/3", "/dice/4",
+	"/dice/5", "/dice/6", "/dice/7", "/dice/8",
 };
 
 class Player : public Node {
@@ -59,14 +57,15 @@ public:
 		//Place tile listener
 		Holder *_holder = &holder;
 		placeInput.pressedFunc = [_holder](int i) {
-			_holder->placeDie(i % DICEMAX); 
+			_holder->placeDie(i % DICEMAX);
 		};
 
 		//Fire listener
 		Player *_player = this;
 		int fireMouse = fireInput.addKey(MOUSE_OFFSET+0);
 		fireInput.heldFunc = [fireMouse, _player](int i) {
-			_player->spawnBullet(i == fireMouse);
+			if(i > 3)
+				_player->spawnBullet(i == fireMouse);
 		}; 
 
 		UpdateList::addListener(this, sf::Event::MouseMoved);

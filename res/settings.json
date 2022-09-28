@@ -4,7 +4,7 @@
 		"down": "R",
 		"left": "A",
 		"right": "S",
-		"joystick": 3
+		"joystick": 1
 	},
 	"weapon": {
 		"up": "Up",
@@ -14,31 +14,27 @@
 		"joystick": 2
 	},
 	"dice": {
-		"keyboard": {
-			"1": "Num1",
-			"2": "Num2",
-			"3": "Num3",
-			"4": "Num4",
-			"5": "Num5",
-			"6": "Num6",
-			"7": "Num7",
-			"8": "Num8"
-		},
-		"joystick": {
-			"1": "JoystickY",
-			"2": "JoystickB",
-			"3": "JoystickA",
-			"4": "JoystickX"
-		}
+		"1": "Num1",
+		"2": "Num2",
+		"3": "Num3",
+		"4": "Num4",
+		"5": "Num5",
+		"6": "Num6",
+		"7": "Num7",
+		"8": "Num8",
+		"1&1": "Joystick4Left",
+		"2&1": "Joystick4Up",
+		"3&1": "Joystick4Right",
+		"4&1": "Joystick4Down",
+		"5&1": "JoystickX",
+		"6&1": "JoystickY",
+		"7&1": "JoystickB",
+		"8&1": "JoystickA"
 	},
 	"menu": {
-		"keyboard": {
-			"start": "Space",
-			"exit": "Escape"
-		},
-		"joystick": {
-			"start": "JoystickA",
-			"exit": "JoystickStart"
-		}
+		"start": "Space",
+		"exit": "Escape",
+		"start&1": "JoystickA",
+		"exit&1": "JoystickStart"
 	}
 }

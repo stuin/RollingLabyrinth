@@ -7,10 +7,10 @@
 
 int main() {
 	Settings::loadSettings("res/settings.json");
-	srand(time(NULL));
+	srand(time(NULL));  
 
 	//Load node textures
-	TextureSet textures; 
+	TextureSet textures;
 	UpdateList::loadTexture(&textures.playerTexture, "res/player.png");
 	UpdateList::loadTexture(&textures.enemyTexture, "res/enemy.png");
 	UpdateList::loadTexture(&textures.bulletTexture, "res/bullet.png");
@@ -23,15 +23,15 @@ int main() {
 	UpdateList::loadTexture(&textures.startTexture, "res/startbutton.png");
 	UpdateList::loadTexture(&textures.quitTexture, "res/quitbutton.png");
 
-	//Setup player
-	Player player(&textures);
+	//Setup player  
+	Player player(&textures);  
 	int cord = (STARTROOM+3)*GRIDSIZE+GRIDSIZE/2;
 	player.setPosition(sf::Vector2f(cord, cord));
 	player.setTexture(textures.playerTexture);
 	player.setScale(GRIDSCALE, GRIDSCALE);
 	UpdateList::addNode(&player);
 
-	//Lock UI Layers
+	//Lock UI Layers  
 	UpdateList::staticLayer(DIETOP);
 	UpdateList::staticLayer(BORDER);
 	UpdateList::staticLayer(HOLDING);
