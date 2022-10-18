@@ -5,7 +5,7 @@
 struct TextureSet {
 	sf::Texture playerTexture;
 	sf::Texture enemyTexture;
-	sf::Texture bulletTexture;
+	sf::Texture bulletTexture; 
 	sf::Texture diceTexture;
 	sf::Texture tilesTexture;
 	sf::Texture borderTexture;
@@ -39,6 +39,7 @@ enum CollisionLayer {
 
 static const std::map<char, int> displayIndex = {
 	{' ', -1},
+	{'/', -1},
 	{'#',0},
 	{'&',0},
 	{'.', 1},

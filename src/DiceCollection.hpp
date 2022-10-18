@@ -6,8 +6,8 @@
 #define ROTATIONS 4096
 #define GRIDSCALE 4
 #define GRIDSIZE 16*4
-#define GRIDWIDTH 9
-#define STARTROOM 4*7+1
+#define GRIDWIDTH 11
+#define STARTROOM 5*7+1
 
 class DiceCollection {
 private:
@@ -108,7 +108,8 @@ public:
 	void overlayGrid(Indexer *index, unsigned int x, unsigned int y) {
 		GridMaker *grid = &(this->grid);
 		index->mapGrid([x, y, grid](char c, sf::Vector2f pos) {
-			grid->setTile(x + pos.x, y + pos.y, c);
+			if(c != '/')
+				grid->setTile(x + pos.x, y + pos.y, c);
 		});
 		dungeon->reload();
 	}

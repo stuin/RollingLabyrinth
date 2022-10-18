@@ -9,7 +9,7 @@
 std::vector<std::string> diceLayout = {
 	"/dice/1", "/dice/2", "/dice/3", "/dice/4",
 	"/dice/5", "/dice/6", "/dice/7", "/dice/8",
-};
+}; 
 
 class Player : public Node {
 	DirectionHandler movementInput;

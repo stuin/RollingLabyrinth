@@ -150,6 +150,7 @@ public:
 			int y = pos.y / collisionMap->getScale().y - 1;
 			//std::cout << x << " " << y << std::endl;
 			if(i < count) {
+				//Locate top left corner
 				if(x % 7 == 0)
 					x -= 3;
 				else if(x % 7 == 6)
@@ -163,7 +164,8 @@ public:
 				y = (y / 7) * 7 + 1;
 
 				//Place tiles
-				if(collisionMap->getTile(sf::Vector2f(x*GRIDSIZE, y*GRIDSIZE)) == EMPTY) {
+				int goalTile = (values[i] / 4 == 0) ? WALL : EMPTY;
+				if(collisionMap->getTile(sf::Vector2f(x*GRIDSIZE, y*GRIDSIZE)) == goalTile) {
 					collection.overlayGrid(collection.getDie(values[i]), x, y);
 
 					//Place dice/enemy

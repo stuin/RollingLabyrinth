@@ -2,7 +2,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "indexes.h"
+#include "indexes.h" 
 #include "Player.hpp"
 
 int main() {
