@@ -1,4 +1,4 @@
-#include "Skyrmion/InputHandler.hpp"
+#include "Skyrmion/InputHandler.h"
 #include "Skyrmion/TileMap.hpp"
 #include "Holder.hpp"
 #include "Bullet.hpp"
