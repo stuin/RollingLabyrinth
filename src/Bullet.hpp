@@ -11,13 +11,10 @@ public:
 	}
 
 	void update(double time) {
-		sf::Vector2f target = getShiftedPosition(velocity, time * 600);
-		int targetType = collisionMap->getTile(target);
+		sf::Vector2f target = move(velocity, time * 600);
 
-		if(targetType == WALL || targetType == EMPTY)
+		if(collisionMap->getTile(target) <= 0)
 			setDelete();
-		else
-			setPosition(target);
 	}
 
 	void collide(Node *other) {

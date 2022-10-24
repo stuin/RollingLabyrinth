@@ -76,19 +76,15 @@ public:
 	}
 
 	void update(double time) {
-		sf::Vector2f target = movementInput.getMovement(this, time * 300);
-		int targetType = collisionMap->getTile(target);
-
-		//Move player
-		if(targetType != WALL && targetType != EMPTY)
-			setPosition(target);
+		sf::Vector2f target = movementInput.getMovement(time * 300);
+		target = move(target, collisionMap);
 
 		//Run timer
 		if(fireTime > 0)
 			fireTime -= time;
 
 		//Win game
-		if(targetType == EXIT)
+		if(collisionMap->getTile(target) == EXIT)
 			menu.showEnd(true);
 	}
 

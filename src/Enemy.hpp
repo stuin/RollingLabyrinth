@@ -10,13 +10,7 @@ public:
 	}
 
 	void update(double time) {
-		if((startTimer -= time) <= 0) {
-			sf::Vector2f target = getShiftedPosition(
-				player->getGPosition() - getGPosition(), time * 200);
-			int targetType = collisionMap->getTile(target);
-
-			if(targetType != WALL && targetType != EMPTY)
-				setPosition(target);
-		}
+		if((startTimer -= time) <= 0)
+			move(player->getGPosition() - getGPosition(), collisionMap, time * 200);
 	}
 };

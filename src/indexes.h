@@ -17,11 +17,11 @@ struct TextureSet {
 };
 
 enum CollisionType {
-	WALL,
-	EMPTY,
-	FLOOR,
-	EDGE,
-	EXIT
+	EMPTY = -1,
+	WALL = 0,
+	FLOOR = 1,
+	EDGE = 2,
+	EXIT = 3
 };
 
 enum CollisionLayer {
