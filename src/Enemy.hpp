@@ -13,4 +13,9 @@ public:
 		if((startTimer -= time) <= 0)
 			move(player->getGPosition() - getGPosition(), collisionMap, time * 200);
 	}
+
+	void recieveMessage(int id) {
+		if(id == CLEAR_ENTITIES)
+			setDelete();
+	}
 };

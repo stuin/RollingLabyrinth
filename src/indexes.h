@@ -16,6 +16,13 @@ struct TextureSet {
 	sf::Texture quitTexture;
 };
 
+enum Messages {
+	CLEAR_ENTITIES,
+	RESET_MAP,
+	SHOW_WIN,
+	SHOW_LOST
+};
+
 enum CollisionType {
 	EMPTY = -1,
 	WALL = 0,
@@ -32,7 +39,7 @@ enum CollisionLayer {
 	PLAYER,
 	BORDER,
 	HOLDING,
-	SHADING,
+	MENU,
 	INPUT,
 	TITLE
 };

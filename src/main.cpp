@@ -2,8 +2,9 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "indexes.h" 
-#include "Player.hpp"
+#include "Skyrmion/UpdateList.h"
+#include "Skyrmion/Settings.h"
+#include "spawners.h"
 
 int main() {
 	Settings::loadSettings("res/settings.json");
@@ -23,13 +24,8 @@ int main() {
 	UpdateList::loadTexture(&textures.startTexture, "res/startbutton.png");
 	UpdateList::loadTexture(&textures.quitTexture, "res/quitbutton.png");
 
-	//Setup player  
-	Player player(&textures);  
-	int cord = (STARTROOM+3)*GRIDSIZE+GRIDSIZE/2;
-	player.setPosition(sf::Vector2f(cord, cord));
-	player.setTexture(textures.playerTexture);
-	player.setScale(GRIDSCALE, GRIDSCALE);
-	UpdateList::addNode(&player);
+	//Run player setup
+	spawnPlayer(&textures);
 
 	//Lock UI Layers  
 	UpdateList::staticLayer(DIETOP);
@@ -39,7 +35,6 @@ int main() {
 	UpdateList::staticLayer(INPUT); 
 
 	//Finish engine setup
-	UpdateList::setCamera(&player, sf::Vector2f(1920, 1080));
 	UpdateList::startEngine("Rolling Labyrinth", TITLE);
 	return 0;
 }

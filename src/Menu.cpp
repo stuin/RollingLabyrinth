@@ -1,3 +1,6 @@
+#include "Skyrmion/UpdateList.h"
+#include "spawners.h"
+
 class Menu : public DrawNode {
 private:
 	sf::RectangleShape fade;
@@ -6,13 +9,15 @@ private:
 	Node endText;
 	Node titleText;
 	Node startButton;
+	Node restartButton;
 	Node quitButton;
 
 public:
 	Menu(TextureSet *_textures, Node *parent) 
-	: DrawNode(fade, SHADING, sf::Vector2i(2000, 2000), parent), 
+	: DrawNode(fade, MENU, sf::Vector2i(2000, 2000), parent), 
 	endText(TITLE, sf::Vector2i(283, 99), true, this), titleText(TITLE, sf::Vector2i(328, 158), false, this), 
-	startButton(TITLE, sf::Vector2i(156, 75), false, this), quitButton(TITLE, sf::Vector2i(156, 75), false, this) {
+	startButton(TITLE, sf::Vector2i(156, 75), false, this), restartButton(TITLE, sf::Vector2i(156, 75), false, this), 
+	quitButton(TITLE, sf::Vector2i(156, 75), false, this) {
 		
 		this->textures = _textures;
 		pauseGame(true);
@@ -25,6 +30,11 @@ public:
 		quitButton.setTexture(_textures->quitTexture);
 		quitButton.setPosition(-400, 100);
 
+		//Pause menu
+		restartButton.setTexture(_textures->startTexture);
+		restartButton.setPosition(200, 200);
+		restartButton.setHidden();
+
 		//Title Shading
 		fade.setSize(sf::Vector2f(2000, 2000));
 		fade.setFillColor(sf::Color(255, 255, 255, 50));
@@ -32,6 +42,7 @@ public:
 		UpdateList::addNode(&endText);
 		UpdateList::addNode(&titleText);
 		UpdateList::addNode(&startButton);
+		UpdateList::addNode(&restartButton);
 		UpdateList::addNode(&quitButton);
 		UpdateList::addNode(this);
 		UpdateList::hideLayer(HOLDING, true);
@@ -44,7 +55,7 @@ public:
 			if(!startButton.isHidden() && event.key.code == sf::Keyboard::Space)
 				startGame();
 			else if(event.key.code == sf::Keyboard::Escape)
-				pauseGame(quitButton.isHidden());
+				pauseGame(isHidden());
 		} else if(event.mouseButton.button == sf::Mouse::Left && !isHidden()) {
 			sf::Vector2f pos = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y);
 			//std::cout << pos.x << ":" << pos.y << "\n";
@@ -52,14 +63,30 @@ public:
 				startGame();
 			else if(quitButton.getRect().contains(pos))
 				UpdateList::stopEngine();
+			else if(restartButton.getRect().contains(pos))
+				restartGame();
 		}
+	}
+
+	void recieveMessage(int id) {
+		if(id == SHOW_WIN)
+			showEnd(true);
+		else if(id == SHOW_LOST)
+			showEnd(false);
 	}
 
 	void startGame() {
 		titleText.setHidden();
-		startButton.setPosition(-100, 200);
-		quitButton.setPosition(100, 200);
+		startButton.setHidden();
+		restartButton.setHidden(false);
+		quitButton.setPosition(-200, 200);
 		UpdateList::hideLayer(HOLDING, false);
+		pauseGame(false);
+	}
+
+	void restartGame() {
+		UpdateList::sendMessage(CLEAR_ENTITIES);
+		UpdateList::sendMessage(RESET_MAP);
 		pauseGame(false);
 	}
 
@@ -83,3 +110,7 @@ public:
 		pauseGame(true);
 	}
 };
+
+void spawnMenu(TextureSet *_textures, Node *parent) {
+	Menu *menu = new Menu(_textures, parent);
+}

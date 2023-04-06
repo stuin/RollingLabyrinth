@@ -93,6 +93,19 @@ public:
 		}
 	}
 
+	void recieveMessage(int id) {
+		if(id == RESET_MAP) {
+			for(int i = 0; i < DICEMAX; i++) {
+				if(i < DICESTART)
+					values[i] = dice[i].start(&collection);
+				else
+					dice[i].map->setHidden(true);
+			}
+			count = DICESTART;
+			collection.rebuildMap();
+		}
+	}
+
 	Indexer *getCollision() {
 		return collection.getCollision();
 	}

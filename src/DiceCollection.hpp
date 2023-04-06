@@ -1,4 +1,5 @@
 #include "Skyrmion/AnimatedTileMap.hpp"
+#include "spawners.h"
 
 #define MAPCOUNT 24
 #define DIEWIDTH 112
@@ -31,6 +32,12 @@ public:
 		dungeon = new TileMap(&textures->tilesTexture, 16, 16, new Indexer(&grid, displayIndex, 0), DIETOP);
 		dungeon->setScale(GRIDSCALE, GRIDSCALE);
 		UpdateList::addNode(dungeon);
+
+		rebuildMap();
+	}
+
+	void rebuildMap() {
+		grid.clearTiles(' ');
 
 		//Create grid border
 		int width = grid.getSize().x;
