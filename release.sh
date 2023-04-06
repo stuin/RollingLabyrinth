@@ -8,6 +8,9 @@ output="RollingLabyrinth"
 windows_cmd="x86_64-w64-mingw32-g++ $files -o $output.exe $options $windows_libs"
 linux_cmd="g++ $files -o $output.out $options $linux_libs"
 
+cp res/settings.json devSettings.json
+cp res/defaultSettings.json res/settings.json
+
 echo $windows_cmd
 $windows_cmd
 
@@ -16,4 +19,6 @@ $linux_cmd
 
 echo "Done, Creating zip"
 zip -r "$output.zip" "$output.*" res/
+
+cp devSettings.json res/settings.json
 
