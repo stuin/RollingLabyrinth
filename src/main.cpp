@@ -7,7 +7,7 @@
 
 int main() {
 	Settings::loadSettings("res/settings.json");
-	srand(time(NULL));  
+	srand(time(NULL));
 
 	//Load node textures
 	TextureSet textures;

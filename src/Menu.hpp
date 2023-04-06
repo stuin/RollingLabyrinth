@@ -43,8 +43,11 @@ public:
 		if(event.type == sf::Event::KeyPressed) {
 			if(!startButton.isHidden() && event.key.code == sf::Keyboard::Space)
 				startGame();
+			else if(event.key.code == sf::Keyboard::Escape)
+				pauseGame(quitButton.isHidden());
 		} else if(event.mouseButton.button == sf::Mouse::Left && !isHidden()) {
 			sf::Vector2f pos = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y);
+			//std::cout << pos.x << ":" << pos.y << "\n";
 			if(startButton.getRect().contains(pos))
 				startGame();
 			else if(quitButton.getRect().contains(pos))
@@ -54,8 +57,8 @@ public:
 
 	void startGame() {
 		titleText.setHidden();
-		startButton.setHidden();
-		quitButton.setPosition(0, 200);
+		startButton.setPosition(-100, 200);
+		quitButton.setPosition(100, 200);
 		UpdateList::hideLayer(HOLDING, false);
 		pauseGame(false);
 	}
