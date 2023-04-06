@@ -1,11 +1,11 @@
-#include "Skyrmion/InputHandler.hpp"
+#include "Skyrmion/InputHandler.h"
 #include "Skyrmion/TileMap.hpp"
 #include "Holder.hpp"
 #include "Bullet.hpp"
 
 #define MINFIRERATE 0.3f;
 
-int diceLayout[DICEMAX] = {
+std::vector<int> diceLayout = {
 	sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3, sf::Keyboard::Num4,
 	sf::Keyboard::Num5, sf::Keyboard::Num6, sf::Keyboard::Num7, sf::Keyboard::Num8
 };
@@ -35,7 +35,7 @@ class Player : public Node {
 public:
 	Player(TextureSet *_textures) : Node(PLAYER, sf::Vector2i(10, 11)), 
 	movementInput("/movement", INPUT, this), fireInput("/weapon", INPUT, this), 
-	placeInput(diceLayout, DICEMAX, INPUT, this), 
+	placeInput(diceLayout, INPUT, this), 
 	holder(_textures, this), textures(_textures) {
 
 		collideWith(COLLECTABLE);
@@ -78,16 +78,11 @@ public:
 	}
 
 	void update(double time) {
-		sf::Vector2f target = movementInput.getMovement(this, time * 300);
-		int targetType = collisionMap->getTile(target);
-
-		//Move player
-		if(targetType != WALL && targetType != EMPTY)
-			setPosition(target);
+		move(movementInput.getMovement(time * 300), collisionMap);
 
 		//Win game
-		if(targetType == EXIT)
-			UpdateList::sendMessage(MENU, SHOW_WIN);
+		if(collisionMap->getTile(getPosition()) == EXIT)
+			UpdateList::sendSignal(MENU, SHOW_WIN);
 
 		//Aim at arrow keys
 		sf::Vector2f target2 = fireInput.getDirection();
@@ -110,7 +105,7 @@ public:
 			object->setDelete();
 		} else if(object->getLayer() == ENEMY) {
 			if(holder.deleteDie(-1) == -1)
-				UpdateList::sendMessage(MENU, SHOW_LOST);
+				UpdateList::sendSignal(MENU, SHOW_LOST);
 			object->setDelete();
 		}
 	}

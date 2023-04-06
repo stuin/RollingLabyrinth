@@ -85,8 +85,8 @@ public:
 	}
 
 	void restartGame() {
-		UpdateList::sendMessage(CLEAR_ENTITIES);
-		UpdateList::sendMessage(RESET_MAP);
+		UpdateList::sendSignal(CLEAR_ENTITIES);
+		UpdateList::sendSignal(RESET_MAP);
 		pauseGame(false);
 	}
 
@@ -112,5 +112,5 @@ public:
 };
 
 void spawnMenu(TextureSet *_textures, Node *parent) {
-	Menu *menu = new Menu(_textures, parent);
+	new Menu(_textures, parent);
 }
