@@ -78,11 +78,11 @@ public:
 	}
 
 	void update(double time) {
-		move(movementInput.getMovement(time * 300), collisionMap);
+		move(movementInput.getDirection(), collisionMap, time * 300);
 
 		//Win game
 		if(collisionMap->getTile(getPosition()) == EXIT)
-			UpdateList::sendSignal(MENU, SHOW_WIN);
+			UpdateList::sendSignal(MENU, SHOW_WIN, this);
 
 		//Aim at arrow keys
 		sf::Vector2f target2 = fireInput.getDirection();
@@ -105,12 +105,12 @@ public:
 			object->setDelete();
 		} else if(object->getLayer() == ENEMY) {
 			if(holder.deleteDie(-1) == -1)
-				UpdateList::sendSignal(MENU, SHOW_LOST);
+				UpdateList::sendSignal(MENU, SHOW_LOST, this);
 			object->setDelete();
 		}
 	}
 
-	void recieveMessage(int id) {
+	void recieveMessage(int id, Node *sender) {
 		if(id == RESET_MAP) {
 			int cord = (STARTROOM+3)*GRIDSIZE+GRIDSIZE/2;
 			setPosition(sf::Vector2f(cord, cord));

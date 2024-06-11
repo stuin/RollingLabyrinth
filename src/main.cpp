@@ -35,6 +35,6 @@ int main() {
 	UpdateList::staticLayer(INPUT); 
 
 	//Finish engine setup
-	UpdateList::startEngine("Rolling Labyrinth", TITLE);
+	UpdateList::startEngine("Rolling Labyrinth");
 	return 0;
 }

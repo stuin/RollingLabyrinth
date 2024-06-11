@@ -93,7 +93,7 @@ public:
 		}
 	}
 
-	void recieveMessage(int id) {
+	void recieveMessage(int id, Node *sender) {
 		if(id == RESET_MAP) {
 			for(int i = 0; i < DICEMAX; i++) {
 				if(i < DICESTART)

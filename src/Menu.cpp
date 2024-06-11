@@ -68,7 +68,7 @@ public:
 		}
 	}
 
-	void recieveMessage(int id) {
+	void recieveMessage(int id, Node *sender) {
 		if(id == SHOW_WIN)
 			showEnd(true);
 		else if(id == SHOW_LOST)
@@ -85,8 +85,8 @@ public:
 	}
 
 	void restartGame() {
-		UpdateList::sendSignal(CLEAR_ENTITIES);
-		UpdateList::sendSignal(RESET_MAP);
+		UpdateList::sendSignal(CLEAR_ENTITIES, this);
+		UpdateList::sendSignal(RESET_MAP, this);
 		pauseGame(false);
 	}
 

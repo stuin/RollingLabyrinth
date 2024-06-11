@@ -14,7 +14,7 @@ public:
 			move(player->getGPosition() - getGPosition(), collisionMap, time * 200);
 	}
 
-	void recieveMessage(int id) {
+	void recieveMessage(int id, Node *sender) {
 		if(id == CLEAR_ENTITIES)
 			setDelete();
 	}
