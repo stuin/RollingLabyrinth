@@ -25,7 +25,7 @@ public:
 		}
 	}
 
-	void recieveMessage(int id, Node *sender) {
+	void recieveSignal(int id, Node *sender) {
 		if(id == CLEAR_ENTITIES)
 			setDelete();
 	}

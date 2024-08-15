@@ -1,10 +1,16 @@
-#include "Skyrmion/UpdateList.h"
+#include "Skyrmion/InputHandler.h"
 #include "spawners.h"
+
+std::vector<std::string> menuLayout = {
+	"/menu/start", "/menu/pause"
+};
 
 class Menu : public DrawNode {
 private:
 	sf::RectangleShape fade;
 	TextureSet *textures;
+
+	InputHandler menuInput;
 
 	Node endText;
 	Node titleText;
@@ -13,12 +19,13 @@ private:
 	Node quitButton;
 
 public:
-	Menu(TextureSet *_textures, Node *parent) 
-	: DrawNode(fade, MENU, sf::Vector2i(2000, 2000), parent), 
-	endText(TITLE, sf::Vector2i(283, 99), true, this), titleText(TITLE, sf::Vector2i(328, 158), false, this), 
-	startButton(TITLE, sf::Vector2i(156, 75), false, this), restartButton(TITLE, sf::Vector2i(156, 75), false, this), 
+	Menu(TextureSet *_textures, Node *parent)
+	: DrawNode(fade, MENU, sf::Vector2i(2000, 2000), parent),
+	menuInput(menuLayout, INPUT, this),
+	endText(TITLE, sf::Vector2i(283, 99), true, this), titleText(TITLE, sf::Vector2i(328, 158), false, this),
+	startButton(TITLE, sf::Vector2i(156, 75), false, this), restartButton(TITLE, sf::Vector2i(156, 75), false, this),
 	quitButton(TITLE, sf::Vector2i(156, 75), false, this) {
-		
+
 		this->textures = _textures;
 		pauseGame(true);
 
@@ -39,6 +46,22 @@ public:
 		fade.setSize(sf::Vector2f(2000, 2000));
 		fade.setFillColor(sf::Color(255, 255, 255, 50));
 
+		//Link buttons
+		Menu *_menu = this;
+		menuInput.pressedFunc = [_menu](int i) {
+			if(i == 0) {
+				if(!_menu->startButton.isHidden())
+					_menu->startGame();
+				else if(!_menu->restartButton.isHidden())
+					_menu->restartGame();
+			} else if(i == 1) {
+				if(_menu->endText.isHidden())
+					_menu->pauseGame(_menu->isHidden());
+				else
+					UpdateList::stopEngine();
+			}
+		};
+
 		UpdateList::addNode(&endText);
 		UpdateList::addNode(&titleText);
 		UpdateList::addNode(&startButton);
@@ -47,16 +70,10 @@ public:
 		UpdateList::addNode(this);
 		UpdateList::hideLayer(HOLDING, true);
 		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
-		UpdateList::addListener(this, sf::Event::KeyPressed);
 	}
 
 	void recieveEvent(sf::Event event, WindowSize *windowSize) {
-		if(event.type == sf::Event::KeyPressed) {
-			if(!startButton.isHidden() && event.key.code == sf::Keyboard::Space)
-				startGame();
-			else if(event.key.code == sf::Keyboard::Escape)
-				pauseGame(isHidden());
-		} else if(event.mouseButton.button == sf::Mouse::Left && !isHidden()) {
+		if(event.mouseButton.button == sf::Mouse::Left && !isHidden()) {
 			sf::Vector2f pos = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y);
 			//std::cout << pos.x << ":" << pos.y << "\n";
 			if(startButton.getRect().contains(pos))
@@ -68,7 +85,7 @@ public:
 		}
 	}
 
-	void recieveMessage(int id, Node *sender) {
+	void recieveSignal(int id, Node *sender) {
 		if(id == SHOW_WIN)
 			showEnd(true);
 		else if(id == SHOW_LOST)

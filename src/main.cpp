@@ -27,12 +27,12 @@ int main() {
 	//Run player setup
 	spawnPlayer(&textures);
 
-	//Lock UI Layers  
+	//Lock UI Layers
 	UpdateList::staticLayer(DIETOP);
 	UpdateList::staticLayer(BORDER);
 	UpdateList::staticLayer(HOLDING);
-	UpdateList::staticLayer(PLAYER); 
-	UpdateList::staticLayer(INPUT); 
+	UpdateList::staticLayer(PLAYER);
+	UpdateList::staticLayer(INPUT);
 
 	//Finish engine setup
 	UpdateList::startEngine("Rolling Labyrinth");

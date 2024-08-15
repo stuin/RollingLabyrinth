@@ -14,8 +14,18 @@ public:
 	int rotation = 0;
 	int final = 0;
 
+	sf::RectangleShape shape;
+	DrawNode *rectangle;
+
 	DiceRoller(AnimatedTileMap *map) {
 		this->map = map;
+
+		//Black background
+		shape.setSize(sf::Vector2f(16*7, 16*7));
+		shape.setFillColor(sf::Color::Black);
+		rectangle = new DrawNode(shape, HOLDING, sf::Vector2i(16*7, 16*7), map);
+		rectangle->setOrigin(0,0);
+		UpdateList::addNode(rectangle);
 	}
 
 	int start(DiceCollection *collection) {
@@ -55,21 +65,22 @@ private:
 	TextureSet *textures;
 
 public:
-	Holder(TextureSet *_textures, Node *parent) : Node(BORDER, sf::Vector2i(1024, 128), false, parent), 
+	Holder(TextureSet *_textures, Node *parent) : Node(BORDER, sf::Vector2i(1024, 128), false, parent),
 	collection(_textures), textures(_textures) {
 		setPosition(sf::Vector2f(0, 450));
 		setTexture(textures->borderTexture);
+		setTextureRect(sf::IntRect(0, 0, 1024, 128));
 
 		//Set up holding dice
 		dice.reserve(DICEMAX);
 		for(int i = 0; i < DICEMAX; i++) {
 			AnimatedTileMap *map = new AnimatedTileMap(sf::Vector2i(16*7, 16*7), DICEMAXTIME, HOLDING);
 			for(int j = 0; j < 6; j++)
-				map->addFrame(new TileMap(&textures->tilesTexture, 
+				map->addFrame(new TileMap(&textures->tilesTexture,
 					16, 16, collection.getDie(0), HOLDING));
 			map->setHidden(true);
 			map->setParent(this);
-			map->setPosition((i-4)*(DIEWIDTH+16)+16, -56);
+			map->setPosition((i-4)*(DIEWIDTH+16)+8, -56);
 			dice.emplace_back(map);
 			UpdateList::addNode(map);
 
@@ -93,7 +104,7 @@ public:
 		}
 	}
 
-	void recieveMessage(int id, Node *sender) {
+	void recieveSignal(int id, Node *sender) {
 		if(id == RESET_MAP) {
 			for(int i = 0; i < DICEMAX; i++) {
 				if(i < DICESTART)
@@ -103,7 +114,14 @@ public:
 			}
 			count = DICESTART;
 			collection.rebuildMap();
+		} else if(id == CONTROLS_JOYSTICK) {
+			std::cout << "Joystick Enabled " << "\n";
+			setTextureRect(sf::IntRect(0, 128, 1024, 128));
+		} else if(id == CONTROLS_KEYBOARD) {
+			std::cout << "Joystick Disabled " << "\n";
+			setTextureRect(sf::IntRect(0, 0, 1024, 128));
 		}
+
 	}
 
 	Indexer *getCollision() {

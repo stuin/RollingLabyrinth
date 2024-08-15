@@ -5,7 +5,7 @@
 struct TextureSet {
 	sf::Texture playerTexture;
 	sf::Texture enemyTexture;
-	sf::Texture bulletTexture; 
+	sf::Texture bulletTexture;
 	sf::Texture diceTexture;
 	sf::Texture tilesTexture;
 	sf::Texture borderTexture;
@@ -20,7 +20,10 @@ enum Messages {
 	CLEAR_ENTITIES,
 	RESET_MAP,
 	SHOW_WIN,
-	SHOW_LOST
+	SHOW_LOST,
+	CONTROLS_JOYSTICK,
+	CONTROLS_MOUSE,
+	CONTROLS_KEYBOARD
 };
 
 enum CollisionType {
@@ -37,8 +40,8 @@ enum CollisionLayer {
 	ENEMY,
 	BULLET,
 	PLAYER,
-	BORDER,
 	HOLDING,
+	BORDER,
 	MENU,
 	INPUT,
 	TITLE

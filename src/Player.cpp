@@ -5,9 +5,8 @@
 
 #define MINFIRERATE 0.3f;
 
-std::vector<int> diceLayout = {
-	sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3, sf::Keyboard::Num4,
-	sf::Keyboard::Num5, sf::Keyboard::Num6, sf::Keyboard::Num7, sf::Keyboard::Num8
+std::vector<std::string> diceLayout = {
+	"/dice/1", "/dice/2", "/dice/3", "/dice/4", "/dice/5", "/dice/6", "/dice/7", "/dice/8"
 };
 
 class Player : public Node {
@@ -22,6 +21,7 @@ class Player : public Node {
 	sf::Vector2f fireDir = sf::Vector2f(1, 0);
 	double fireTime = 0;
 	bool fired = false;
+	bool joystick = false;
 
 	void spawnBullet() {
 		//Create bullet
@@ -33,9 +33,9 @@ class Player : public Node {
 	}
 
 public:
-	Player(TextureSet *_textures) : Node(PLAYER, sf::Vector2i(10, 11)), 
-	movementInput("/movement", INPUT, this), fireInput("/weapon", INPUT, this), 
-	placeInput(diceLayout, INPUT, this), 
+	Player(TextureSet *_textures) : Node(PLAYER, sf::Vector2i(10, 11)),
+	movementInput("/movement", INPUT, this), fireInput("/weapon", INPUT, this),
+	placeInput(diceLayout, INPUT, this),
 	holder(_textures, this), textures(_textures) {
 
 		collideWith(COLLECTABLE);
@@ -80,6 +80,13 @@ public:
 	void update(double time) {
 		move(movementInput.getDirection(), collisionMap, time * 300);
 
+		//Check control scheme
+		if(movementInput.joystickMovement != joystick) {
+			joystick = movementInput.joystickMovement;
+			//std::cout << "Joystick: " << joystick << "\n";
+			UpdateList::sendSignal(BORDER, joystick ? CONTROLS_JOYSTICK : CONTROLS_KEYBOARD, this);
+		}
+
 		//Win game
 		if(collisionMap->getTile(getPosition()) == EXIT)
 			UpdateList::sendSignal(MENU, SHOW_WIN, this);
@@ -110,7 +117,7 @@ public:
 		}
 	}
 
-	void recieveMessage(int id, Node *sender) {
+	void recieveSignal(int id, Node *sender) {
 		if(id == RESET_MAP) {
 			int cord = (STARTROOM+3)*GRIDSIZE+GRIDSIZE/2;
 			setPosition(sf::Vector2f(cord, cord));
