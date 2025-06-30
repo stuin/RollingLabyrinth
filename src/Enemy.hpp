@@ -11,7 +11,7 @@ public:
 
 	void update(double time) {
 		if((startTimer -= time) <= 0)
-			move(player->getGPosition() - getGPosition(), collisionMap, time * 200);
+			setPosition(topDownMovement(this, player->getGPosition() - getGPosition(), collisionMap, time * 200));
 	}
 
 	void recieveSignal(int id, Node *sender) {

@@ -1,5 +1,6 @@
-#include "Skyrmion/InputHandler.h"
-#include "Skyrmion/TileMap.hpp"
+#include "Skyrmion/input/InputHandler.h"
+#include "Skyrmion/input/MovementSystems.h"
+#include "Skyrmion/tiling/TileMap.hpp"
 #include "Holder.hpp"
 #include "Bullet.hpp"
 
@@ -13,40 +14,38 @@ class Player : public Node {
 	DirectionHandler movementInput;
 	DirectionHandler fireInput;
 	InputHandler placeInput;
-	Indexer *collisionMap;
+	Indexer *collisionMap1;
+	Indexer *collisionMap2;
 
 	Holder holder;
-	TextureSet *textures;
 
-	sf::Vector2f fireDir = sf::Vector2f(1, 0);
+	Vector2f fireDir = Vector2f(1, 0);
 	double fireTime = 0;
 	bool fired = false;
 	bool joystick = false;
 
 	void spawnBullet() {
 		//Create bullet
-		Bullet *bullet = new Bullet(fireDir, collisionMap);
-		bullet->setTexture(textures->bulletTexture);
-		bullet->setScale(1.5, 1.5);
+		Bullet *bullet = new Bullet(fireDir, collisionMap2);
+		bullet->setTexture(bulletTexture);
 		bullet->setPosition(getGPosition());
 		UpdateList::addNode(bullet);
 	}
 
 public:
-	Player(TextureSet *_textures) : Node(PLAYER, sf::Vector2i(10, 11)),
+	Player() : Node(PLAYER, Vector2i(10, 11)),
 	movementInput("/movement", INPUT, this), fireInput("/weapon", INPUT, this),
-	placeInput(diceLayout, INPUT, this),
-	holder(_textures, this), textures(_textures) {
+	placeInput(diceLayout, INPUT, this), holder(this) {
 
 		collideWith(COLLECTABLE);
 		collideWith(ENEMY);
-		collisionMap = holder.getCollision();
+		collisionMap1 = holder.getCollision1();
+		collisionMap2 = holder.getCollision2();
 
 		//Position player
 		int cord = (STARTROOM+3)*GRIDSIZE+GRIDSIZE/2;
-		setPosition(sf::Vector2f(cord, cord));
-		setTexture(_textures->playerTexture);
-		setScale(GRIDSCALE, GRIDSCALE);
+		setPosition(Vector2f(cord, cord));
+		setTexture(playerTexture);
 
 		//Place tile listener
 		Holder *_holder = &holder;
@@ -63,13 +62,13 @@ public:
 		};
 
 		UpdateList::addNode(this);
-		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
-		UpdateList::setCamera(this, sf::Vector2f(1920, 1080));
+		UpdateList::addListener(this, EVENT_MOUSE);
+		UpdateList::setCamera(this, Vector2f(1920.0/getScale().x, 1080.0/getScale().y));
 	}
 
-	void recieveEvent(sf::Event event, WindowSize *windowSize) {
-		if(event.mouseButton.button == sf::Mouse::Left) {
-			fireDir = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y) - getGPosition();
+	void recieveEvent(Event event) {
+		if(event.code == 0 && event.down) {
+			fireDir = vectorLength(screenToGlobal(event.x, event.y) - getGPosition(), 600);
 			if(fireTime <= 0) {
 				spawnBullet();
 				fireTime = MINFIRERATE;
@@ -78,7 +77,7 @@ public:
 	}
 
 	void update(double time) {
-		move(movementInput.getDirection(), collisionMap, time * 300);
+		setPosition(topDownMovement(this, movementInput.getDirection(), collisionMap2, time * 300));
 
 		//Check control scheme
 		if(movementInput.joystickMovement != joystick) {
@@ -88,12 +87,12 @@ public:
 		}
 
 		//Win game
-		if(collisionMap->getTile(getPosition()) == EXIT)
+		if(collisionMap1->getTile(getPosition()) == EXIT)
 			UpdateList::sendSignal(MENU, SHOW_WIN, this);
 
 		//Aim at arrow keys
-		sf::Vector2f target2 = fireInput.getDirection();
-		if(target2 != sf::Vector2f(0, 0))
+		Vector2f target2 = fireInput.getDirection();
+		if(target2 != Vector2f(0, 0))
 			fireDir = target2;
 
 		//Fire bullet
@@ -120,12 +119,12 @@ public:
 	void recieveSignal(int id, Node *sender) {
 		if(id == RESET_MAP) {
 			int cord = (STARTROOM+3)*GRIDSIZE+GRIDSIZE/2;
-			setPosition(sf::Vector2f(cord, cord));
+			setPosition(Vector2f(cord, cord));
 		}
 	}
 };
 
-void spawnPlayer(TextureSet *_textures) {
-	Player *player = new Player(_textures);
-	spawnMenu(_textures, player);
+void spawnPlayer() {
+	Player *player = new Player();
+	spawnMenu(player);
 }

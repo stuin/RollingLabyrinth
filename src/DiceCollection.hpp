@@ -1,4 +1,4 @@
-#include "Skyrmion/AnimatedTileMap.hpp"
+#include "Skyrmion/tiling/TileMap.hpp"
 #include "spawners.h"
 
 #define MAPCOUNT 24
@@ -17,7 +17,7 @@ private:
 	TileMap *dungeon;
 
 public:
-	DiceCollection(TextureSet *textures) : grid(GRIDWIDTH*7+2, GRIDWIDTH*7+2) {
+	DiceCollection() : grid(GRIDWIDTH*7+2, GRIDWIDTH*7+2) {
 		maps.reserve(MAPCOUNT);
 		for(int i = 1; i <= MAPCOUNT; i++) {
 			std::string name = "res/dice/map_a";
@@ -25,11 +25,11 @@ public:
 				name += '0';
 			name += std::to_string(i) + ".txt";
 			maps.emplace_back(name);
-			//maps.emplace_back(tileset, 16, 16, Indexer(&grid, displayIndex, 0), HOLDING);
+			//maps.emplace_back(tileset, 16, 16, MapIndexer(&grid, displayIndex, 0), HOLDING);
 		}
 
 		//Load base tile map
-		dungeon = new TileMap(&textures->tilesTexture, 16, 16, new Indexer(&grid, displayIndex, 0), DIETOP);
+		dungeon = new TileMap(tilesTexture, 0, 16, 16, new MapIndexer(&grid, displayIndex, 0), DIETOP);
 		dungeon->setScale(GRIDSCALE, GRIDSCALE);
 		UpdateList::addNode(dungeon);
 
@@ -37,24 +37,23 @@ public:
 	}
 
 	void rebuildMap() {
-		grid.clearTiles(' ');
+		grid.clearTiles();
 
 		//Create grid border
 		int width = grid.getSize().x;
 		int height = grid.getSize().y;
 		for(int x = 0; x < width; x++) {
-			grid.setTile(x, 0, '&');
-			grid.setTile(x, height-1, '&');
+			grid.setTileI(x, 0, '&');
+			grid.setTileI(x, height-1, '&');
 		}
 		for(int y = 0; y < height; y++) {
-			grid.setTile(0, y, '&');
-			grid.setTile(width-1, y, '&');
+			grid.setTileI(0, y, '&');
+			grid.setTileI(width-1, y, '&');
 		}
 
 		//Add starter room
 		GridMaker startGrid("res/dice/map_start.txt");
-		Indexer startIndex(&startGrid, displayIndex, 0);
-		overlayGrid(&startIndex, STARTROOM, STARTROOM);
+		overlayGrid(&startGrid, STARTROOM, STARTROOM);
 
 		//Find location on edge
 		int y = getNext(GRIDWIDTH);
@@ -76,8 +75,7 @@ public:
 
 		//Add exit room
 		GridMaker endGrid("res/dice/map_end.txt");
-		Indexer endIndex(&endGrid, displayIndex, 0);
-		overlayGrid(&endIndex, (x*7)+1, (y*7)+1);
+		overlayGrid(&endGrid, (x*7)+1, (y*7)+1);
 	}
 
 	int getNext(int size) {
@@ -105,18 +103,22 @@ public:
 		return *(maps[index].getTexture());
 	}*/
 	Indexer *getDie(int index) {
-		return new Indexer(&maps[index], displayIndex, 0);
+		return &maps[index];
 	}
 
-	Indexer *getCollision() {
-		return new Indexer(&grid, collisionIndex, FLOOR, GRIDSIZE, GRIDSIZE);
+	MapIndexer *getCollision1() {
+		return new MapIndexer(&grid, collisionIndex1, FLOOR, GRIDSIZE, GRIDSIZE);
+	}
+
+	MapIndexer *getCollision2() {
+		return new MapIndexer(&grid, collisionIndex2, FLOOR, GRIDSIZE, GRIDSIZE);
 	}
 
 	void overlayGrid(Indexer *index, unsigned int x, unsigned int y) {
 		GridMaker *grid = &(this->grid);
-		index->mapGrid([x, y, grid](char c, sf::Vector2f pos) {
+		index->mapGrid([x, y, grid](int c, Vector2f pos) {
 			if(c != '/')
-				grid->setTile(x + pos.x, y + pos.y, c);
+				grid->setTileI(x + pos.x, y + pos.y, c);
 		});
 		dungeon->reload();
 	}

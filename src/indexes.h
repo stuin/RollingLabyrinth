@@ -1,19 +1,37 @@
 #pragma once
 
-#include "Skyrmion/GridMaker.h"
+#include "Skyrmion/tiling/GridMaker.h"
+#include "Skyrmion/input/MovementEnums.h"
 
-struct TextureSet {
-	sf::Texture playerTexture;
-	sf::Texture enemyTexture;
-	sf::Texture bulletTexture;
-	sf::Texture diceTexture;
-	sf::Texture tilesTexture;
-	sf::Texture borderTexture;
-	sf::Texture winTexture;
-	sf::Texture loseTexture;
-	sf::Texture titleTexture;
-	sf::Texture startTexture;
-	sf::Texture quitTexture;
+enum Textures {
+	invalidTexture,
+	playerTexture,
+	enemyTexture,
+	bulletTexture,
+	diceTexture,
+	tilesTexture,
+	borderTexture,
+	winTexture,
+	loseTexture,
+	titleTexture,
+	startTexture,
+	quitTexture,
+	transparencyTexture
+};
+static std::vector<std::string> TEXTURE_FILES = {
+	"#INVALID",
+	"res/player.png",
+	"res/enemy.png",
+	"res/bullet.png",
+	"res/dice.png",
+	"res/dicetiles.png",
+	"res/border.png",
+	"res/winscreen.png",
+	"res/losescreen.png",
+	"res/titlescreen.png",
+	"res/startbutton.png",
+	"res/quitbutton.png",
+	"res/debug/heatmapT.png"
 };
 
 enum Messages {
@@ -27,7 +45,7 @@ enum Messages {
 };
 
 enum CollisionType {
-	EMPTY = -1,
+	EMPTY2 = -1,
 	WALL = 0,
 	FLOOR = 1,
 	EDGE = 2,
@@ -46,8 +64,11 @@ enum CollisionLayer {
 	INPUT,
 	TITLE
 };
+static std::vector<std::string> LAYER_NAMES = {
+	"DIETOP", "COLLECTABLE", "ENEMY", "BULLET", "PLAYER", "HOLDING", "BORDER", "MENU", "INPUT", "TITLE"
+};
 
-static const std::map<char, int> displayIndex = {
+static const std::map<int, int> displayIndex = {
 	{' ', -1},
 	{'/', -1},
 	{'#',0},
@@ -60,8 +81,8 @@ static const std::map<char, int> displayIndex = {
 	{'e', 4}
 };
 
-static const std::map<char, int> collisionIndex = {
-	{' ', EMPTY},
+static const std::map<int, int> collisionIndex1 = {
+	{' ', EMPTY2},
 	{'#', WALL},
 	{'&', WALL},
 	{'.', FLOOR},
@@ -70,4 +91,16 @@ static const std::map<char, int> collisionIndex = {
 	{'a', FLOOR},
 	{'b', FLOOR},
 	{'e', EXIT}
+};
+
+static const std::map<int, int> collisionIndex2 = {
+	{' ', FULL},
+	{'#', FULL},
+	{'&', FULL},
+	{'.', EMPTY},
+	{'-', EMPTY},
+	{'s', EMPTY},
+	{'a', EMPTY},
+	{'b', EMPTY},
+	{'e', EMPTY}
 };

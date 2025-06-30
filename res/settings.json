@@ -2,8 +2,8 @@
 	"movement": {
 		"up": "W",
 		"left": "A",
-		"down": "R",
-		"right": "S",
+		"down": "S",
+		"right": "D",
 		"joystick": 1
 	},
 	"weapon": {

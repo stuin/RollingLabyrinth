@@ -1,4 +1,5 @@
-#include "Skyrmion/UpdateList.h"
+#include "Skyrmion/core/UpdateList.h"
+#include "Skyrmion/input/MovementSystems.h"
 #include "DiceCollection.hpp"
 #include "Collectable.hpp"
 #include "Enemy.hpp"
@@ -14,17 +15,18 @@ public:
 	int rotation = 0;
 	int final = 0;
 
-	sf::RectangleShape shape;
-	DrawNode *rectangle;
+	Node *rectangle;
 
 	DiceRoller(AnimatedTileMap *map) {
 		this->map = map;
 
 		//Black background
-		shape.setSize(sf::Vector2f(16*7, 16*7));
-		shape.setFillColor(sf::Color::Black);
-		rectangle = new DrawNode(shape, HOLDING, sf::Vector2i(16*7, 16*7), map);
+		//shape.setSize(Vector2f(16*7, 16*7));
+		//shape.setFillColor(COLOR_BLACK);
+		rectangle = new Node(HOLDING, Vector2i(16*7, 16*7), false, map);
 		rectangle->setOrigin(0,0);
+		rectangle->setTexture(transparencyTexture);
+		rectangle->setTextureIntRect(IntRect(0, 0, 1, 1));
 		UpdateList::addNode(rectangle);
 	}
 
@@ -34,7 +36,7 @@ public:
 		this->rotation = collection->getNext(ROTATIONS);
 
 		for(int j = 0; j < 6; j++)
-			map->getFrame(j)->setIndex(collection->getDie(collection->getPerm(perm, rotation, j)));
+			map->getFrame(j)->setIndexer(new MapIndexer(collection->getDie(collection->getPerm(perm, rotation, j)), displayIndex, 0));
 		map->setCurrentFrame(0);
 		map->setHidden(false);
 		map->setPauseAfter(6 + final);
@@ -49,7 +51,7 @@ public:
 		this->rotation = other->rotation;
 
 		for(int j = 0; j < 6; j++)
-			map->getFrame(j)->setIndex(collection->getDie(collection->getPerm(perm, rotation, j)));
+			map->getFrame(j)->setIndexer(new MapIndexer(collection->getDie(collection->getPerm(perm, rotation, j)), displayIndex, 0));
 		map->setPaused(true);
 		map->setCurrentFrame(final);
 	}
@@ -62,25 +64,25 @@ private:
 	int count = DICESTART;
 
 	DiceCollection collection;
-	TextureSet *textures;
 
 public:
-	Holder(TextureSet *_textures, Node *parent) : Node(BORDER, sf::Vector2i(1024, 128), false, parent),
-	collection(_textures), textures(_textures) {
-		setPosition(sf::Vector2f(0, 450));
-		setTexture(textures->borderTexture);
-		setTextureRect(sf::IntRect(0, 0, 1024, 128));
+	Holder(Node *parent) : Node(BORDER, Vector2i(1024, 128), false, parent), collection() {
+		setTexture(borderTexture);
+		setTextureIntRect(IntRect(0, 0, 1024, 128));
+
+		parent->setScale(GRIDSCALE, GRIDSCALE);
+		setScale(parent->getInverseScale());
+		setUPosition(0, 400);
 
 		//Set up holding dice
 		dice.reserve(DICEMAX);
 		for(int i = 0; i < DICEMAX; i++) {
-			AnimatedTileMap *map = new AnimatedTileMap(sf::Vector2i(16*7, 16*7), DICEMAXTIME, HOLDING);
+			AnimatedTileMap *map = new AnimatedTileMap(Vector2i(16*7, 16*7), DICEMAXTIME, HOLDING);
 			for(int j = 0; j < 6; j++)
-				map->addFrame(new TileMap(&textures->tilesTexture,
-					16, 16, collection.getDie(0), HOLDING));
+				map->addFrame(new TileMap(tilesTexture, 0, 16, 16, collection.getDie(0), HOLDING));
 			map->setHidden(true);
 			map->setParent(this);
-			map->setPosition((i-4)*(DIEWIDTH+16)+8, -56);
+			map->setUPosition(((i-4)*(DIEWIDTH+16)+8), -56);
 			dice.emplace_back(map);
 			UpdateList::addNode(map);
 
@@ -89,12 +91,12 @@ public:
 		}
 
 		UpdateList::addNode(this);
-		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
+		UpdateList::addListener(this, EVENT_MOUSE);
 	}
 
-	void recieveEvent(sf::Event event, WindowSize *windowSize) {
-		if(event.mouseButton.button == sf::Mouse::Left) {
-			sf::Vector2f pos = windowSize->worldPos(event.mouseButton.x, event.mouseButton.y);
+	void recieveEvent(Event event) {
+		if(event.code == 0 && event.down) {
+			Vector2f pos = screenToGlobal(event.x, event.y);
 			if(getRect().contains(pos)) {
 				for(int i = 0; i < count; i++) {
 					if(dice[i].map->getRect().contains(pos))
@@ -116,16 +118,19 @@ public:
 			collection.rebuildMap();
 		} else if(id == CONTROLS_JOYSTICK) {
 			std::cout << "Joystick Enabled " << "\n";
-			setTextureRect(sf::IntRect(0, 128, 1024, 128));
+			setTextureIntRect(IntRect(0, 128, 1024, 128));
 		} else if(id == CONTROLS_KEYBOARD) {
 			std::cout << "Joystick Disabled " << "\n";
-			setTextureRect(sf::IntRect(0, 0, 1024, 128));
+			setTextureIntRect(IntRect(0, 0, 1024, 128));
 		}
 
 	}
 
-	Indexer *getCollision() {
-		return collection.getCollision();
+	Indexer *getCollision1() {
+		return collection.getCollision1();
+	}
+	Indexer *getCollision2() {
+		return collection.getCollision2();
 	}
 
 	void addDie() {
@@ -153,18 +158,18 @@ public:
 		return count;
 	}
 
-	void placeNode(int x, int y, char c, sf::Vector2f pos) {
+	void placeNode(int x, int y, char c, Vector2f pos) {
 		x = (x + pos.x) * GRIDSIZE + GRIDSIZE/2;
 		y = (y + pos.y) * GRIDSIZE + GRIDSIZE/2;
 
 		if(c == 'a' || collection.getNext(8) == 0) {
 			Collectable *d = new Collectable(&collection);
-			d->setTexture(textures->diceTexture);
+			d->setTexture(diceTexture);
 			d->setPosition(x, y);
 			UpdateList::addNode(d);
 		} else if(c == 'b') {
-			Enemy *t = new Enemy(getParent(), collection.getCollision());
-			t->setTexture(textures->enemyTexture);
+			Enemy *t = new Enemy(getParent(), collection.getCollision2());
+			t->setTexture(enemyTexture);
 			t->setScale(3, 3);
 			t->setPosition(x, y);
 			UpdateList::addNode(t);
@@ -172,8 +177,8 @@ public:
 	}
 
 	void placeDie(int i) {
-		sf::Vector2f pos = getParent()->getPosition();
-		Indexer *collisionMap = collection.getCollision();
+		Vector2f pos = getParent()->getPosition();
+		Indexer *collisionMap = collection.getCollision1();
 		Holder *_holder = this;
 
 		if(collisionMap->getTile(pos) == EDGE) {
@@ -195,12 +200,12 @@ public:
 				y = (y / 7) * 7 + 1;
 
 				//Place tiles
-				int goalTile = (values[i] / 4 == 0) ? WALL : EMPTY;
-				if(collisionMap->getTile(sf::Vector2f(x*GRIDSIZE, y*GRIDSIZE)) == goalTile) {
+				int goalTile = (values[i] / 4 == 0) ? WALL : EMPTY2;
+				if(collisionMap->getTile(Vector2f(x*GRIDSIZE, y*GRIDSIZE)) == goalTile) {
 					collection.overlayGrid(collection.getDie(values[i]), x, y);
 
 					//Place dice/enemy
-					collection.getDie(values[i])->mapGrid([x, y, _holder](char c, sf::Vector2f pos) {
+					collection.getDie(values[i])->mapGrid([x, y, _holder](char c, Vector2f pos) {
 						if(c == 'a' || c == 'b')
 							_holder->placeNode(x, y, c, pos);
 					});
